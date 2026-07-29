@@ -1,0 +1,182 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  VERIFIED_STUDENT
+  VENDOR
+  ADMIN
+}
+
+enum ListingType {
+  SALE
+  RENT
+}
+
+enum ProductCategory {
+  DECORATION
+  EQUIPMENT
+  TABLEWARE
+  ATTIRE
+  PROJECT_TOOLS
+}
+
+enum ProductStatus {
+  IN_STOCK
+  OUT_OF_STOCK
+  ON_SALE
+  BEST_SELLER
+  NEW_ARRIVAL
+  FREE_BORROW
+  INACTIVE
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  DELIVERED
+  RENTAL_ACTIVE
+  RETURNED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id            String         @id @default(uuid())
+  username      String         @unique
+  email         String         @unique
+  passwordHash  String
+  fullname      String
+  role          Role           @default(CUSTOMER)
+  studentId     String?
+  isVerified    Boolean        @default(false)
+  trustScore    Float          @default(5.0)
+  createdAt     DateTime       @default(now())
+  events        Event[]
+  products      Product[]      // Products listed by vendor
+  orders        BookingOrder[]
+  cart          Cart?
+  reviews       Review[]
+  sessions      Session[]
+}
+
+model VerificationCode {
+  id        String   @id @default(uuid())
+  email     String
+  code      String   // Plain or hashed 6-digit OTP code
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  token        String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+}
+
+model Product {
+  id                 String          @id @default(uuid())
+  sku                String          @unique // Unique Product Code / SKU
+  ownerId            String
+  owner              User            @relation(fields: [ownerId], references: [id])
+  name               String
+  description        String
+  category           ProductCategory
+  status             ProductStatus   @default(IN_STOCK)
+  listingType        ListingType     // Strictly SALE or RENT
+  price              Float?          // Price for SALE
+  rentalPricePerDay  Float?          // Price for RENT per day
+  depositAmount      Float?          // Required deposit for rental
+  stock              Int             @default(1)
+  imageUrl           String
+  ecoFeatures        String?         @default("")
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @default(now()) @updatedAt
+  orderItems         OrderItem[]
+  bookedDates        BookedDate[]
+  cartItems          CartItem[]
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String    @id @default(uuid())
+  cartId    String
+  cart      Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int       @default(1)
+  startDate DateTime?
+  endDate   DateTime?
+}
+
+model BookedDate {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  date      DateTime
+}
+
+model BookingOrder {
+  id              String      @id @default(uuid())
+  buyerId         String
+  buyer           User        @relation(fields: [buyerId], references: [id])
+  totalAmount     Float
+  depositTotal    Float       @default(0)
+  platformFee     Float       @default(0)
+  status          OrderStatus @default(PENDING_PAYMENT)
+  rentalStartDate DateTime?
+  rentalEndDate   DateTime?
+  createdAt       DateTime    @default(now())
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id        String       @id @default(uuid())
+  orderId   String
+  order     BookingOrder @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product      @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  budget      Float
+  guestCount  Int
+  aiPlanJson  Json
+  createdAt   DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+}
