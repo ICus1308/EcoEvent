@@ -16,10 +16,15 @@ export default function InventoryDashboard() {
   const fetchInventory = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/products");
+      const token = typeof window !== "undefined" ? localStorage.getItem("sessionToken") : null;
+      const res = await fetch("/api/inventory", {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        }
+      });
       const data = await res.json();
       if (data.success) {
-        setProducts(data.products || []);
+        setProducts(data.inventory || []);
       }
     } catch (err) {
       console.error("Failed to load inventory:", err);
@@ -35,7 +40,13 @@ export default function InventoryDashboard() {
   const handleDelete = async (id: string) => {
     if (!confirm("Bạn có chắc chắn muốn xóa niêm yết này không?")) return;
     try {
-      const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+      const token = typeof window !== "undefined" ? localStorage.getItem("sessionToken") : null;
+      const res = await fetch(`/api/products/${id}`, {
+        method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        }
+      });
       const data = await res.json();
       if (data.success) {
         setProducts((prev) => prev.filter((p) => p.id !== id));
@@ -50,9 +61,13 @@ export default function InventoryDashboard() {
   const handleToggleStatus = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === "INACTIVE" ? "IN_STOCK" : "INACTIVE";
     try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("sessionToken") : null;
       const res = await fetch(`/api/products/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ status: newStatus })
       });
       const data = await res.json();

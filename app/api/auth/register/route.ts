@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { sendOtpEmail } from "@/lib/mailer";
+import { prisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
   try {
@@ -25,9 +26,7 @@ export async function POST(req: Request) {
     const normalizedUsername = username.toLowerCase().trim();
     const cleanFullname = fullname.trim();
 
-    const { prisma } = await import("@/lib/prisma");
-
-    // Check if email or username already exists
+    // Check if email or username already exists in Prisma DB
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -50,11 +49,37 @@ export async function POST(req: Request) {
       );
     }
 
+    // 1. Trigger Supabase Auth Signup (sends confirmation email automatically via Supabase default provider)
+    const supabase = await createClient();
+    const origin = req.headers.get("origin") || "http://localhost:3000";
+    
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: normalizedEmail,
+      password,
+      options: {
+        emailRedirectTo: `${origin}/auth/callback`,
+        data: {
+          username: normalizedUsername,
+          fullname: cleanFullname,
+          role
+        }
+      }
+    });
+
+    if (authError) {
+      console.error("Supabase Auth SignUp Error:", authError);
+      return NextResponse.json(
+        { error: authError.message || "Không thể đăng ký với Supabase Auth." },
+        { status: 400 }
+      );
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // 1. Create user with isVerified = false
+    // 2. Create user record in Prisma DB (isVerified = false until email confirmation link is clicked)
     const user = await prisma.user.create({
       data: {
+        id: authData.user?.id || undefined,
         username: normalizedUsername,
         email: normalizedEmail,
         fullname: cleanFullname,
@@ -64,29 +89,11 @@ export async function POST(req: Request) {
       }
     });
 
-    // 2. Generate 6-digit OTP code
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // Expiration: 10 minutes
-
-    // Delete any old OTPs for this email & create new code
-    await prisma.verificationCode.deleteMany({ where: { email: normalizedEmail } }).catch(() => {});
-    await prisma.verificationCode.create({
-      data: {
-        email: normalizedEmail,
-        code: otpCode,
-        expiresAt
-      }
-    });
-
-    // 3. Trigger Real SMTP Email Sending (with Console Fallback)
-    await sendOtpEmail(normalizedEmail, otpCode);
-
     return NextResponse.json({
       success: true,
-      requireOtp: true,
-      message: "Mã xác thực 6 chữ số đã được gửi tới email của bạn!",
-      email: normalizedEmail,
-      otpDebug: process.env.NODE_ENV !== "production" ? otpCode : undefined
+      requireVerification: true,
+      message: "Đăng ký thành công! Vui lòng kiểm tra hộp thư đến (Inbox hoặc Spam) để xác minh tài khoản.",
+      email: normalizedEmail
     });
   } catch (error: any) {
     console.error("Register Error:", error);

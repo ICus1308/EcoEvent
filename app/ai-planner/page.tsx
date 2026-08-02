@@ -67,7 +67,7 @@ export default function AIPlannerPage() {
               <form onSubmit={handleGenerate} className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Loại sự kiện</label>
-                  <Select value={eventType} onValueChange={setEventType}>
+                  <Select value={eventType} onValueChange={(val) => val && setEventType(val)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Chọn loại sự kiện" />
                     </SelectTrigger>
@@ -118,7 +118,7 @@ export default function AIPlannerPage() {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Mức độ thân thiện môi trường</label>
-                  <Select value={ecoLevel} onValueChange={setEcoLevel}>
+                  <Select value={ecoLevel} onValueChange={(val) => val && setEcoLevel(val)}>
                     <SelectTrigger className="w-[300px] max-w-full">
                       <SelectValue placeholder="Chọn mức độ" />
                     </SelectTrigger>

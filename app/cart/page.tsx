@@ -16,7 +16,12 @@ export default function CartPage() {
   const fetchCart = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/cart");
+      const token = typeof window !== "undefined" ? localStorage.getItem("sessionToken") : null;
+      const res = await fetch("/api/cart", {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        }
+      });
       const data = await res.json();
       if (data.success) {
         setItems(data.items || []);
@@ -34,10 +39,18 @@ export default function CartPage() {
 
   const handleRemove = async (itemId: string) => {
     try {
-      const res = await fetch(`/api/cart?itemId=${itemId}`, { method: "DELETE" });
+      const token = typeof window !== "undefined" ? localStorage.getItem("sessionToken") : null;
+      const res = await fetch(`/api/cart?itemId=${itemId}`, {
+        method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        }
+      });
       const data = await res.json();
       if (data.success) {
         setItems((prev) => prev.filter((i) => i.id !== itemId));
+      } else if (data.error) {
+        alert(data.error);
       }
     } catch (err) {
       alert("Không thể xóa sản phẩm khỏi giỏ hàng.");
@@ -66,8 +79,14 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     setCheckoutSuccess(true);
+    const token = typeof window !== "undefined" ? localStorage.getItem("sessionToken") : null;
     setTimeout(() => {
-      fetch("/api/cart", { method: "DELETE" }).catch(() => {});
+      fetch("/api/cart", {
+        method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        }
+      }).catch(() => {});
       router.push("/dashboard/orders");
     }, 2000);
   };
@@ -146,7 +165,11 @@ export default function CartPage() {
                           >
                             {isRent ? "Thuê" : "Mua"}
                           </span>
-                          <span className="text-xs font-mono text-slate-400">SKU: {prod.code || prod.sku}</span>
+                          {item.warehouse?.name && (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
+                              📍 {item.warehouse.name}
+                            </span>
+                          )}
                         </div>
 
                         <h4 className="font-bold text-slate-900 text-base">{prod.name}</h4>

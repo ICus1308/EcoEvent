@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Leaf, Loader2, Mail, Lock, ArrowRight, ArrowLeft, AlertCircle } from "lucide-react";
+import { Leaf, Loader2, Mail, Lock, ArrowRight, ArrowLeft, AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 
 export default function LoginPage() {
@@ -16,10 +16,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Unverified state & Resend email handling
+  const [isUnverified, setIsUnverified] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
+  const [resending, setResending] = useState(false);
+  const [resendSuccessMsg, setResendSuccessMsg] = useState("");
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorMessage("");
+    setIsUnverified(false);
+    setResendSuccessMsg("");
 
     try {
       const res = await fetch("/api/auth/login", {
@@ -37,6 +45,14 @@ export default function LoginPage() {
         return;
       }
 
+      if (res.status === 403 && data.unverified) {
+        setIsUnverified(true);
+        setUnverifiedEmail(data.email || emailOrUsername);
+        setErrorMessage(data.error || "Tài khoản chưa được xác minh email.");
+        setLoading(false);
+        return;
+      }
+
       if (!res.ok || !data.success) {
         setErrorMessage(data.error || "Đăng nhập thất bại.");
         setLoading(false);
@@ -48,6 +64,31 @@ export default function LoginPage() {
       console.error("Login client error:", err);
       setErrorMessage("Không thể kết nối đến máy chủ.");
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!unverifiedEmail || resending) return;
+    setResending(true);
+    setResendSuccessMsg("");
+
+    try {
+      const res = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: unverifiedEmail })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setResendSuccessMsg(data.message || "Đã gửi lại email xác nhận!");
+      } else {
+        setErrorMessage(data.error || "Không thể gửi lại email xác nhận.");
+      }
+    } catch (e) {
+      setErrorMessage("Lỗi kết nối khi gửi lại email.");
+    } finally {
+      setResending(false);
     }
   };
 
@@ -112,9 +153,29 @@ export default function LoginPage() {
           <p className="text-slate-500 mb-8 font-medium text-sm">Truy cập vào tài khoản EcoEvent Hub của bạn.</p>
 
           {errorMessage && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-red-700 text-sm font-medium">
-              <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-              <span>{errorMessage}</span>
+            <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col gap-3 text-amber-900 text-sm font-medium">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <span>{errorMessage}</span>
+              </div>
+              
+              {isUnverified && (
+                <Button
+                  onClick={handleResendVerification}
+                  disabled={resending}
+                  className="mt-1 h-9 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center gap-2 w-full justify-center"
+                >
+                  {resending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                  Gửi lại Email xác nhận ngay
+                </Button>
+              )}
+            </div>
+          )}
+
+          {resendSuccessMsg && (
+            <div className="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 flex items-start gap-3 text-green-800 text-sm font-medium">
+              <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <span>{resendSuccessMsg}</span>
             </div>
           )}
           

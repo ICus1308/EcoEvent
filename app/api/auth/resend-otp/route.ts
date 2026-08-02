@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { sendOtpEmail } from "@/lib/mailer";
 
@@ -14,7 +15,7 @@ export async function POST(req: Request) {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
-    const { prisma } = await import("@/lib/prisma");
+    
 
     const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (!user) {

@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Leaf, Loader2, User, Mail, Lock, ArrowRight, ArrowLeft, AlertCircle } from "lucide-react";
+import { Leaf, Loader2, User, Mail, Lock, ArrowRight, ArrowLeft, AlertCircle, CheckCircle2, RefreshCw, Inbox } from "lucide-react";
 import { Role } from "@prisma/client";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -23,6 +23,20 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("CUSTOMER");
   const [errorMessage, setErrorMessage] = useState("");
+  const [sentSuccess, setSentSuccess] = useState(false);
+  
+  // Resend cooldown states
+  const [resending, setResending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const [resendMessage, setResendMessage] = useState("");
+
+  useEffect(() => {
+    let timer: any;
+    if (cooldown > 0) {
+      timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [cooldown]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,16 +67,39 @@ export default function RegisterPage() {
         return;
       }
 
-      // If requireOtp is returned, navigate to OTP verification screen
-      if (data.requireOtp) {
-        router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
-      } else {
-        router.push("/login");
-      }
+      setSentSuccess(true);
+      setCooldown(60); // Start 60s cooldown for resend button
     } catch (err) {
       console.error("Register client error:", err);
       setErrorMessage("Không thể kết nối đến máy chủ.");
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (cooldown > 0 || resending) return;
+    setResending(true);
+    setResendMessage("");
+    setErrorMessage("");
+
+    try {
+      const res = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setResendMessage(data.message || "Đã gửi lại email xác nhận!");
+        setCooldown(60);
+      } else {
+        setErrorMessage(data.error || "Không thể gửi lại email xác nhận.");
+      }
+    } catch (err) {
+      setErrorMessage("Lỗi kết nối khi gửi lại email.");
+    } finally {
+      setResending(false);
     }
   };
 
@@ -103,7 +140,7 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Right Column - Form */}
+      {/* Right Column - Form or Verification Success Notice */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 xl:px-32 bg-white text-slate-900">
         <div className="flex items-center justify-between lg:justify-start mb-8 lg:mb-12">
           <Button 
@@ -123,103 +160,165 @@ export default function RegisterPage() {
         </div>
 
         <div className="w-full max-w-[420px] mx-auto lg:mx-0">
-          <h2 className="text-3xl font-bold mb-2 text-slate-900 tracking-tight">Tạo Tài Khoản</h2>
-          <p className="text-slate-500 mb-8 font-medium text-sm">Bắt đầu hành trình xanh của bạn hôm nay.</p>
+          {sentSuccess ? (
+            /* Dedicated Please Check Inbox View */
+            <div className="space-y-6">
+              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center text-green-600 mb-4 shadow-inner">
+                <Inbox className="h-8 w-8" />
+              </div>
 
-          {errorMessage && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-red-700 text-sm font-medium">
-              <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-              <span>{errorMessage}</span>
-            </div>
-          )}
-          
-          <form onSubmit={handleRegister} className="space-y-5">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Họ và Tên</label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-                <Input 
-                  placeholder="Nguyễn Văn A" 
-                  value={fullname}
-                  onChange={(e) => setFullname(e.target.value)}
-                  required 
-                  className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-green-600 focus-visible:border-green-600 placeholder:text-slate-400" 
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Địa chỉ Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-                <Input 
-                  type="email" 
-                  placeholder="nguyenvana@example.com" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required 
-                  className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-green-600 focus-visible:border-green-600 placeholder:text-slate-400" 
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Mật khẩu</label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-                <Input 
-                  type="password" 
-                  placeholder="Mật khẩu của bạn (ít nhất 6 ký tự)" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required 
-                  minLength={6}
-                  className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-green-600 focus-visible:border-green-600 placeholder:text-slate-400" 
-                />
-              </div>
-            </div>
+              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Kiểm tra Hộp thư của bạn</h2>
+              <p className="text-slate-600 font-medium text-sm leading-relaxed">
+                Chúng tôi đã gửi một đường link xác minh đến địa chỉ email: <br />
+                <strong className="text-green-700 font-bold">{email}</strong>
+              </p>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Vai trò</label>
-              <Select value={role} onValueChange={(val) => val && setRole(val as Role)}>
-                <SelectTrigger className="w-full bg-slate-50/50 border-slate-200 text-slate-900 h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-green-600 focus-visible:border-green-600">
-                  <SelectValue placeholder="Chọn vai trò của bạn">
-                    {ROLE_LABELS[role]}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200 text-slate-900 min-w-[320px] shadow-lg">
-                  {Object.entries(ROLE_LABELS).map(([key, label]) => (
-                    <SelectItem key={key} value={key}>{label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {role === "VERIFIED_STUDENT" && (
-              <div className="px-4 py-3 bg-green-50 text-green-800 text-xs rounded-xl border border-green-200 font-medium leading-relaxed">
-                Sau khi xác thực email, bạn sẽ được miễn phí tiền cọc và nhận ưu đãi độc quyền.
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs font-medium space-y-1">
+                <div className="font-bold flex items-center gap-1 text-amber-800">
+                  <AlertCircle className="h-4 w-4 text-amber-600" /> Lưu ý quan trọng:
+                </div>
+                <p>Nếu bạn không thấy thư trong Vài phút, vui lòng kiểm tra mục **Thư rác (Spam)** hoặc **Quảng cáo**.</p>
               </div>
-            )}
-            
-            <Button 
-              type="submit" 
-              className="w-full h-12 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold text-[15px] mt-2 transition-all shadow-md hover:shadow-lg cursor-pointer" 
-              disabled={loading}
-            >
-              {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : (
-                <span className="flex items-center justify-center">
-                  Tiếp Tục Xác Thực Email <ArrowRight className="ml-2 h-4 w-4" />
-                </span>
+
+              {resendMessage && (
+                <div className="p-3 bg-green-50 border border-green-200 rounded-xl text-green-800 text-xs font-semibold flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+                  <span>{resendMessage}</span>
+                </div>
               )}
-            </Button>
-          </form>
 
-          <div className="mt-8 text-center text-sm">
-            <span className="text-slate-500 font-medium">Đã có tài khoản? </span>
-            <Link href="/login" className="text-green-600 hover:text-green-700 font-bold ml-1 transition-colors">
-              Đăng nhập
-            </Link>
-          </div>
+              {errorMessage && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <div className="space-y-3 pt-2">
+                <Button
+                  onClick={handleResendVerification}
+                  disabled={cooldown > 0 || resending}
+                  variant="outline"
+                  className="w-full h-11 rounded-xl border-slate-200 text-slate-800 font-bold text-sm hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                >
+                  {resending ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-green-600" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 text-slate-500" />
+                  )}
+                  {cooldown > 0 ? `Gửi lại sau (${cooldown}s)` : "Gửi lại email xác nhận"}
+                </Button>
+
+                <Button
+                  onClick={() => router.push("/login")}
+                  className="w-full h-11 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold text-sm transition-all"
+                >
+                  Đến trang Đăng Nhập
+                </Button>
+              </div>
+            </div>
+          ) : (
+            /* Registration Form View */
+            <>
+              <h2 className="text-3xl font-bold mb-2 text-slate-900 tracking-tight">Tạo Tài Khoản</h2>
+              <p className="text-slate-500 mb-8 font-medium text-sm">Bắt đầu hành trình xanh của bạn hôm nay.</p>
+
+              {errorMessage && (
+                <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-red-700 text-sm font-medium">
+                  <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+              
+              <form onSubmit={handleRegister} className="space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Họ và Tên</label>
+                  <div className="relative">
+                    <User className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                    <Input 
+                      placeholder="Nguyễn Văn A" 
+                      value={fullname}
+                      onChange={(e) => setFullname(e.target.value)}
+                      required 
+                      className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-green-600 focus-visible:border-green-600 placeholder:text-slate-400" 
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Địa chỉ Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                    <Input 
+                      type="email" 
+                      placeholder="nguyenvana@example.com" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required 
+                      className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-green-600 focus-visible:border-green-600 placeholder:text-slate-400" 
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Mật khẩu</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                    <Input 
+                      type="password" 
+                      placeholder="Mật khẩu của bạn (ít nhất 6 ký tự)" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required 
+                      minLength={6}
+                      className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-green-600 focus-visible:border-green-600 placeholder:text-slate-400" 
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Vai trò</label>
+                  <Select value={role} onValueChange={(val) => val && setRole(val as Role)}>
+                    <SelectTrigger className="w-full bg-slate-50/50 border-slate-200 text-slate-900 h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-green-600 focus-visible:border-green-600">
+                      <SelectValue placeholder="Chọn vai trò của bạn">
+                        {ROLE_LABELS[role]}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-slate-200 text-slate-900 min-w-[320px] shadow-lg">
+                      {Object.entries(ROLE_LABELS).map(([key, label]) => (
+                        <SelectItem key={key} value={key}>{label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {role === "VERIFIED_STUDENT" && (
+                  <div className="px-4 py-3 bg-green-50 text-green-800 text-xs rounded-xl border border-green-200 font-medium leading-relaxed">
+                    Sau khi xác thực email, bạn sẽ được miễn phí tiền cọc và nhận ưu đãi độc quyền.
+                  </div>
+                )}
+                
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold text-[15px] mt-2 transition-all shadow-md hover:shadow-lg cursor-pointer" 
+                  disabled={loading}
+                >
+                  {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : (
+                    <span className="flex items-center justify-center">
+                      Đăng Ký & Nhận Link Xác Thực <ArrowRight className="ml-2 h-4 w-4" />
+                    </span>
+                  )}
+                </Button>
+              </form>
+
+              <div className="mt-8 text-center text-sm">
+                <span className="text-slate-500 font-medium">Đã có tài khoản? </span>
+                <Link href="/login" className="text-green-600 hover:text-green-700 font-bold ml-1 transition-colors">
+                  Đăng nhập
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

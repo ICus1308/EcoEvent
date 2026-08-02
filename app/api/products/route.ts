@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { getAuthenticatedUserId } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 
 const productSchema = z.object({
   name: z.string().min(2, "Tên sản phẩm phải từ 2 ký tự trở lên"),
@@ -20,50 +23,7 @@ const productSchema = z.object({
   path: ["sku"]
 });
 
-async function getAuthenticatedUserId(req: Request): Promise<string | null> {
-  try {
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
-
-    const token = authHeader.substring(7);
-
-    // 1. Check demo-token prefix
-    if (token.startsWith("demo-token-")) {
-      try {
-        const raw = token.replace("demo-token-", "");
-        const decodedStr = Buffer.from(raw.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf-8");
-        const decoded = JSON.parse(decodedStr);
-        if (decoded?.id || decoded?.userId) {
-          return decoded.id || decoded.userId;
-        }
-      } catch (e) {}
-    }
-
-    // 2. Check JSON encoded token format
-    try {
-      const decodedStr = Buffer.from(token.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf-8");
-      const decoded = JSON.parse(decodedStr);
-      if (decoded?.id || decoded?.userId) {
-        return decoded.id || decoded.userId;
-      }
-    } catch (e) {}
-
-    // 3. Check Prisma session database table
-    try {
-      const session = await prisma.session.findUnique({
-        where: { token },
-        select: { userId: true }
-      });
-      if (session?.userId) return session.userId;
-    } catch (e) {}
-
-    return null;
-  } catch (e) {
-    return null;
-  }
-}
-
-// GET /api/products - Public Storefront Listing (Strict Database-Only Query)
+// GET /api/products - Public Storefront Listing (Only Available Stock, Exclude 0 Stock)
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -74,8 +34,14 @@ export async function GET(req: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
 
+    // Clean up any zero stock items from shop listing automatically (Auto-Deletion Rule)
+    await prisma.product.deleteMany({
+      where: { stock: { lte: 0 } }
+    }).catch(() => {});
+
     const where: any = {
-      status: { not: "INACTIVE" }
+      status: { not: "INACTIVE" },
+      stock: { gt: 0 }
     };
 
     if (search) {
@@ -111,35 +77,13 @@ export async function GET(req: Request) {
   }
 }
 
-// POST /api/products - User/Vendor publishes new item directly to DB
+// POST /api/products - User/Vendor publishes new item (Strict Creator Isolation)
 export async function POST(req: Request) {
   try {
-    let currentUserId = await getAuthenticatedUserId(req);
+    const currentUserId = await getAuthenticatedUserId(req);
 
-    // Ensure valid ownerId exists in database
-    if (currentUserId) {
-      const userExists = await prisma.user.findUnique({ where: { id: currentUserId } });
-      if (!userExists) {
-        currentUserId = null;
-      }
-    }
-
-    // Fallback: If unauthenticated or user deleted, use/create a default system vendor
     if (!currentUserId) {
-      let defaultUser = await prisma.user.findFirst();
-      if (!defaultUser) {
-        defaultUser = await prisma.user.create({
-          data: {
-            username: "ecovendor",
-            email: "vendor@eco.vn",
-            fullname: "Chủ Cửa Hàng Sinh Thái",
-            passwordHash: "default_hash",
-            role: "VENDOR",
-            isVerified: true
-          }
-        });
-      }
-      currentUserId = defaultUser.id;
+      return NextResponse.json({ success: false, error: "Vui lòng đăng nhập để đăng sản phẩm" }, { status: 401 });
     }
 
     const body = await req.json().catch(() => ({}));
@@ -175,6 +119,19 @@ export async function POST(req: Request) {
         ownerId: currentUserId
       }
     });
+
+    // Auto-assign to default warehouse so it displays properly in multi-warehouse architecture
+    const defaultWarehouse = await prisma.warehouse.findFirst();
+    if (defaultWarehouse) {
+      await prisma.warehouseInventory.create({
+        data: {
+          productId: product.id,
+          warehouseId: defaultWarehouse.id,
+          quantity: data.stock,
+          reservedQty: 0
+        }
+      });
+    }
 
     return NextResponse.json({ success: true, product }, { status: 201 });
   } catch (error: any) {

@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 
@@ -16,7 +17,7 @@ export async function POST(req: Request) {
     const normalizedEmail = email.toLowerCase().trim();
     const cleanCode = code.trim();
 
-    const { prisma } = await import("@/lib/prisma");
+    
 
     // 1. Find OTP record in database
     const record = await prisma.verificationCode.findFirst({

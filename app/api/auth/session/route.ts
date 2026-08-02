@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -28,7 +29,7 @@ export async function GET(req: Request) {
     }
 
     try {
-      const { prisma } = await import("@/lib/prisma");
+      
 
       const session = await prisma.session.findUnique({
         where: { token },

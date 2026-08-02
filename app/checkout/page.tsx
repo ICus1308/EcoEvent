@@ -6,31 +6,73 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { CheckCircle2, ShieldCheck, QrCode, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { MOCK_PRODUCTS } from "@/lib/mock-data";
+import { useEffect } from "react";
 
 function CheckoutInner() {
   const searchParams = useSearchParams();
-  const id = searchParams.get("id") || "1";
+  const id = searchParams.get("id") || "";
   const daysParam = searchParams.get("days");
   
-  const product = MOCK_PRODUCTS.find(p => p.id === id) || MOCK_PRODUCTS[0];
-  const isRent = product.listingType === "RENT";
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+    async function loadProduct() {
+      try {
+        const res = await fetch(`/api/products/${id}`);
+        const data = await res.json();
+        if (data.success && data.product) {
+          setProduct(data.product);
+        }
+      } catch (err) {
+        console.error("Checkout load product error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProduct();
+  }, [id]);
+
+  const isRent = product?.listingType === "RENT";
   const days = isRent ? parseInt(daysParam || "1") : 1;
   
-  const basePrice = isRent ? (product.rentalPricePerDay || 0) * days : (product.price || 0);
+  const basePrice = isRent ? (product?.rentalPricePerDay || 0) * days : (product?.price || 0);
   const platformFee = basePrice * 0.03; // 3% eco-fee
-  const deposit = isRent ? (product.depositAmount || 0) : 0;
+  const deposit = isRent ? (product?.depositAmount || 0) : 0;
   const totalPayment = basePrice + platformFee + deposit;
 
   const [step, setStep] = useState(1); // 1: Review, 2: Payment, 3: Success
 
   const handlePayment = () => {
     setStep(2);
-    // Simulate webhook payment success after 3 seconds
     setTimeout(() => {
       setStep(3);
     }, 3000);
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mb-3" />
+        <p className="text-sm font-medium text-slate-500">Đang tải thông tin đơn hàng...</p>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-slate-700">
+        <h2 className="text-xl font-bold mb-2">Không tìm thấy sản phẩm thanh toán</h2>
+        <Link href="/shop">
+          <Button variant="outline" className="rounded-xl">Quay lại Chợ Sinh Thái</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-4xl">

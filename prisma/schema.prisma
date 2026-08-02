@@ -88,26 +88,49 @@ model Session {
 }
 
 model Product {
-  id                 String          @id @default(uuid())
-  sku                String          @unique // Unique Product Code / SKU
+  id                 String               @id @default(uuid())
+  sku                String               @unique // Unique Product Code / SKU
   ownerId            String
-  owner              User            @relation(fields: [ownerId], references: [id])
+  owner              User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   name               String
   description        String
   category           ProductCategory
-  status             ProductStatus   @default(IN_STOCK)
-  listingType        ListingType     // Strictly SALE or RENT
-  price              Float?          // Price for SALE
-  rentalPricePerDay  Float?          // Price for RENT per day
-  depositAmount      Float?          // Required deposit for rental
-  stock              Int             @default(1)
+  status             ProductStatus        @default(IN_STOCK)
+  listingType        ListingType          // Strictly SALE or RENT
+  price              Float?               // Price for SALE
+  rentalPricePerDay  Float?               // Price for RENT per day
+  depositAmount      Float?               // Required deposit for rental
+  stock              Int                  @default(1) // Total fallback aggregated stock
   imageUrl           String
-  ecoFeatures        String?         @default("")
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @default(now()) @updatedAt
+  ecoFeatures        String?              @default("")
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @default(now()) @updatedAt
   orderItems         OrderItem[]
   bookedDates        BookedDate[]
   cartItems          CartItem[]
+  inventories        WarehouseInventory[]
+}
+
+model Warehouse {
+  id          String               @id @default(uuid())
+  name        String               // e.g. "Kho Hà Nội", "Kho TP.HCM"
+  location    String
+  inventories WarehouseInventory[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  createdAt   DateTime             @default(now())
+}
+
+model WarehouseInventory {
+  id          String    @id @default(uuid())
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  quantity    Int       @default(0) // Available quantity
+  reservedQty Int       @default(0) // Quantity temporarily locked during pending checkout
+
+  @@unique([productId, warehouseId])
 }
 
 model Cart {
@@ -120,14 +143,16 @@ model Cart {
 }
 
 model CartItem {
-  id        String    @id @default(uuid())
-  cartId    String
-  cart      Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  quantity  Int       @default(1)
-  startDate DateTime?
-  endDate   DateTime?
+  id          String     @id @default(uuid())
+  cartId      String
+  cart        Cart       @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouseId String?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id], onDelete: SetNull)
+  quantity    Int        @default(1)
+  startDate   DateTime?
+  endDate     DateTime?
 }
 
 model BookedDate {
@@ -152,13 +177,15 @@ model BookingOrder {
 }
 
 model OrderItem {
-  id        String       @id @default(uuid())
-  orderId   String
-  order     BookingOrder @relation(fields: [orderId], references: [id])
-  productId String
-  product   Product      @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Float
+  id          String       @id @default(uuid())
+  orderId     String
+  order       BookingOrder @relation(fields: [orderId], references: [id])
+  productId   String
+  product     Product      @relation(fields: [productId], references: [id])
+  warehouseId String?
+  warehouse   Warehouse?   @relation(fields: [warehouseId], references: [id], onDelete: SetNull)
+  quantity    Int
+  price       Float
 }
 
 model Event {

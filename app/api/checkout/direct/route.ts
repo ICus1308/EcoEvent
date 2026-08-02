@@ -1,8 +1,9 @@
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 async function getPrisma() {
   try {
-    const { prisma } = await import("@/lib/prisma");
+    
     return prisma;
   } catch {
     return null;
@@ -16,21 +17,24 @@ export async function POST(req: Request) {
     let currentUserId: string | null = null;
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
-      try {
-        const token = authHeader.substring(7);
-        const decoded = JSON.parse(Buffer.from(token, "base64").toString("utf-8"));
-        if (decoded?.userId) currentUserId = decoded.userId;
-      } catch (e) {}
+      const token = authHeader.substring(7);
+      const prisma = await getPrisma();
+      if (prisma) {
+        const session = await prisma.session.findUnique({
+          where: { token },
+          select: { userId: true }
+        });
+        if (session?.userId) currentUserId = session.userId;
+      }
+    }
+
+    if (!currentUserId) {
+      return NextResponse.json({ success: false, error: "Vui lòng đăng nhập để thực hiện chức năng này" }, { status: 401 });
     }
 
     const prisma = await getPrisma();
     if (!prisma) {
       return NextResponse.json({ success: false, error: "Không thể kết nối cơ sở dữ liệu" }, { status: 500 });
-    }
-
-    if (!currentUserId) {
-      const demoUser = await prisma.user.findFirst();
-      currentUserId = demoUser ? demoUser.id : "user-demo-1";
     }
 
     const body = await req.json().catch(() => ({}));

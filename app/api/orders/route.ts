@@ -1,8 +1,9 @@
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 async function getPrisma() {
   try {
-    const { prisma } = await import("@/lib/prisma");
+    
     return prisma;
   } catch {
     return null;

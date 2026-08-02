@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Zap, Calendar as CalendarIcon, ShieldCheck, Check, Minus, Plus, Loader2, AlertTriangle, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 
+import { Building2 } from "lucide-react";
+
 interface ProductActionCardProps {
   product: {
     id: string;
@@ -18,6 +20,13 @@ interface ProductActionCardProps {
     depositAmount?: number | null;
     stock: number;
     status?: string;
+    inventories?: Array<{
+      id: string;
+      warehouseId: string;
+      quantity: number;
+      reservedQty: number;
+      warehouse: { id: string; name: string; location: string };
+    }>;
   };
 }
 
@@ -30,13 +39,23 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
   const [cartSuccess, setCartSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  const defaultWarehouseId = product.inventories && product.inventories.length > 0 ? product.inventories[0].warehouseId : "";
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>(defaultWarehouseId);
+
   // Rental date state simulation
   const [startDate, setStartDate] = useState<string>("2026-08-01");
   const [endDate, setEndDate] = useState<string>("2026-08-04");
 
   const isRent = product.listingType === "RENT";
-  const isOwner = user && product.ownerId && user.id === product.ownerId;
-  const isOutOfStock = product.stock <= 0 || product.status === "OUT_OF_STOCK";
+  const isOwner = Boolean(user && product.ownerId && user.id === product.ownerId);
+
+  // Selected warehouse stock
+  const selectedInventory = product.inventories?.find(inv => inv.warehouseId === selectedWarehouseId);
+  const availableStock = selectedInventory 
+    ? Math.max(0, selectedInventory.quantity - selectedInventory.reservedQty) 
+    : product.stock;
+
+  const isOutOfStock = availableStock <= 0 || product.status === "OUT_OF_STOCK";
 
   // Calculate rental duration in days
   const calculateDays = () => {
@@ -59,7 +78,7 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
       return;
     }
     if (isOutOfStock) {
-      setErrorMsg("⚠️ Sản phẩm này hiện đã hết hàng!");
+      setErrorMsg("⚠️ Sản phẩm này hiện đã hết hàng tại kho này!");
       return;
     }
 
@@ -68,11 +87,16 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
     setErrorMsg("");
 
     try {
+      const token = localStorage.getItem("sessionToken");
       const res = await fetch("/api/cart", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({
           productId: product.id,
+          warehouseId: selectedWarehouseId,
           quantity,
           startDate: isRent ? startDate : undefined,
           endDate: isRent ? endDate : undefined
@@ -100,7 +124,7 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
       return;
     }
     if (isOutOfStock) {
-      setErrorMsg("⚠️ Sản phẩm này hiện đã hết hàng!");
+      setErrorMsg("⚠️ Sản phẩm này hiện đã hết hàng tại kho này!");
       return;
     }
 
@@ -108,11 +132,16 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
     setErrorMsg("");
 
     try {
+      const token = localStorage.getItem("sessionToken");
       const res = await fetch("/api/checkout/direct", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({
           productId: product.id,
+          warehouseId: selectedWarehouseId,
           quantity,
           rentalStartDate: isRent ? startDate : undefined,
           rentalEndDate: isRent ? endDate : undefined
@@ -179,6 +208,31 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
       </div>
 
       <hr className="border-slate-100 dark:border-slate-800" />
+
+      {/* MULTI-WAREHOUSE SELECTION */}
+      {product.inventories && product.inventories.length > 0 && (
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Building2 className="h-4 w-4 text-emerald-600" />
+            Chọn Kho Xuất Hàng (Warehouse)
+          </label>
+          <select
+            value={selectedWarehouseId}
+            onChange={(e) => setSelectedWarehouseId(e.target.value)}
+            disabled={Boolean(isOwner)}
+            className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-semibold text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-600 disabled:opacity-50"
+          >
+            {product.inventories.map((inv) => {
+              const avail = Math.max(0, inv.quantity - inv.reservedQty);
+              return (
+                <option key={inv.warehouseId} value={inv.warehouseId}>
+                  {inv.warehouse?.name || "Kho hàng"} ({avail > 0 ? `Còn ${avail} sp` : "Hết hàng"})
+                </option>
+              );
+            })}
+          </select>
+        </div>
+      )}
 
       {/* RENT MECHANIC: Interactive Date Range Picker */}
       {isRent && (

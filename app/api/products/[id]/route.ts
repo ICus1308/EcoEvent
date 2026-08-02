@@ -1,5 +1,7 @@
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getAuthenticatedUserId } from "@/lib/auth";
 
 const patchProductSchema = z.object({
   name: z.string().min(2, "Tên sản phẩm phải có từ 2 ký tự").optional(),
@@ -16,48 +18,19 @@ const patchProductSchema = z.object({
   ecoFeatures: z.string().optional()
 });
 
-async function getPrisma() {
-  try {
-    const { prisma } = await import("@/lib/prisma");
-    return prisma;
-  } catch {
-    return null;
-  }
-}
-
-async function getCurrentUserId(req: Request): Promise<string> {
-  const authHeader = req.headers.get("Authorization");
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    try {
-      const token = authHeader.substring(7);
-      const decoded = JSON.parse(Buffer.from(token, "base64").toString("utf-8"));
-      if (decoded?.userId) return decoded.userId;
-    } catch (e) {}
-  }
-
-  const prisma = await getPrisma();
-  if (prisma) {
-    const user = await prisma.user.findFirst();
-    if (user) return user.id;
-  }
-  return "user-demo-1";
-}
-
 // GET /api/products/[id] - Pure DB Query
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const prisma = await getPrisma();
-
-    if (!prisma) {
-      return NextResponse.json({ success: false, error: "Không thể kết nối cơ sở dữ liệu" }, { status: 500 });
-    }
 
     const product = await prisma.product.findFirst({
       where: {
         OR: [{ id }, { sku: id }]
       },
-      include: { owner: { select: { id: true, fullname: true, username: true, role: true } } }
+      include: {
+        owner: { select: { id: true, fullname: true, username: true, role: true } },
+        inventories: { include: { warehouse: true } }
+      }
     });
 
     if (!product) {
@@ -70,11 +43,16 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   }
 }
 
-// PATCH /api/products/[id] - Secure update with ownership check & Zod validation
+// PATCH /api/products/[id] - Secure update with strict ownership check & auto-deletion on 0 stock
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const currentUserId = await getCurrentUserId(req);
+    const currentUserId = await getAuthenticatedUserId(req);
+
+    if (!currentUserId) {
+      return NextResponse.json({ success: false, error: "Vui lòng đăng nhập để thực hiện" }, { status: 401 });
+    }
+
     const body = await req.json().catch(() => ({}));
 
     // Zod validation
@@ -85,11 +63,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     }
 
     const updateData = validation.data;
-    const prisma = await getPrisma();
-
-    if (!prisma) {
-      return NextResponse.json({ success: false, error: "Không thể kết nối cơ sở dữ liệu" }, { status: 500 });
-    }
 
     const existing = await prisma.product.findFirst({
       where: { OR: [{ id }, { sku: id }] }
@@ -99,9 +72,19 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       return NextResponse.json({ success: false, error: "Sản phẩm không tồn tại" }, { status: 404 });
     }
 
-    // Server-side ownership guard
+    // Strict Server-side Creator Ownership Guard
     if (existing.ownerId !== currentUserId) {
-      return NextResponse.json({ success: false, error: "Bạn không có quyền chỉnh sửa sản phẩm này" }, { status: 403 });
+      return NextResponse.json({ success: false, error: "🚫 Bạn không có quyền chỉnh sửa sản phẩm của người khác!" }, { status: 403 });
+    }
+
+    // Auto-Deletion Rule: If stock drops to 0, automatically delete product from shop listing and carts
+    if (updateData.stock !== undefined && updateData.stock <= 0) {
+      await prisma.product.delete({ where: { id: existing.id } });
+      return NextResponse.json({
+        success: true,
+        message: "Sản phẩm đã hết hàng (số lượng = 0) và tự động bị gỡ khỏi cửa hàng.",
+        deleted: true
+      });
     }
 
     const updated = await prisma.product.update({
@@ -120,15 +103,14 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
   return PATCH(req, props);
 }
 
-// DELETE /api/products/[id] - Secure delete/archive
+// DELETE /api/products/[id] - Secure delete with strict creator ownership guard
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const currentUserId = await getCurrentUserId(req);
-    const prisma = await getPrisma();
+    const currentUserId = await getAuthenticatedUserId(req);
 
-    if (!prisma) {
-      return NextResponse.json({ success: false, error: "Không thể kết nối cơ sở dữ liệu" }, { status: 500 });
+    if (!currentUserId) {
+      return NextResponse.json({ success: false, error: "Vui lòng đăng nhập để thực hiện" }, { status: 401 });
     }
 
     const existing = await prisma.product.findFirst({
@@ -139,8 +121,9 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       return NextResponse.json({ success: false, error: "Sản phẩm không tồn tại" }, { status: 404 });
     }
 
+    // Strict Server-side Creator Ownership Guard
     if (existing.ownerId !== currentUserId) {
-      return NextResponse.json({ success: false, error: "Bạn không có quyền xóa sản phẩm này" }, { status: 403 });
+      return NextResponse.json({ success: false, error: "🚫 Bạn không có quyền xóa sản phẩm của người khác!" }, { status: 403 });
     }
 
     await prisma.product.delete({ where: { id: existing.id } });

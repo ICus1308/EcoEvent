@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion, HTMLMotionProps } from "framer-motion";
+import { motion, HTMLMotionProps, Variants } from "framer-motion";
 
 interface AnimationProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;
@@ -51,7 +51,7 @@ export function ScrollReveal({ children, delay = 0, duration = 0.6, yOffset = 30
   );
 }
 
-export const staggerContainerVariants = {
+export const staggerContainerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -62,14 +62,14 @@ export const staggerContainerVariants = {
   },
 };
 
-export const staggerItemVariants = {
+export const staggerItemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.5,
-      ease: [0.21, 0.47, 0.32, 0.98],
+      ease: [0.21, 0.47, 0.32, 0.98] as [number, number, number, number],
     },
   },
 };

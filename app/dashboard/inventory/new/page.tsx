@@ -290,7 +290,7 @@ export default function CreateProductPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-700">Danh Mục Sản Phẩm <span className="text-red-500">*</span></label>
-                <Select value={category} onValueChange={(val) => setCategory(val)}>
+                <Select value={category} onValueChange={(val) => val && setCategory(val)}>
                   <SelectTrigger className="w-full bg-slate-50/50 border-slate-200 text-slate-900 rounded-xl">
                     <SelectValue placeholder="Chọn danh mục" />
                   </SelectTrigger>
