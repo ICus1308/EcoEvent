@@ -78,6 +78,29 @@ model VerificationCode {
   @@index([email])
 }
 
+model PendingRegistration {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  userData    Json     // Stores { passwordHash, fullname, username, role }
+  otpHash     String   // Hashed 6-digit OTP code for database leak protection
+  attempts    Int      @default(0) // Failed attempt counter (max 3 for brute-force protection)
+  expiresAt   DateTime // Expiration date (5 minutes TTL)
+  createdAt   DateTime @default(now())
+
+  @@index([email])
+}
+
+model PasswordResetRequest {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  otpHash     String   // Hashed 6-digit OTP code
+  attempts    Int      @default(0) // Failed attempt counter (max 3 for brute-force protection)
+  expiresAt   DateTime // Expiration date (10 minutes TTL)
+  createdAt   DateTime @default(now())
+
+  @@index([email])
+}
+
 model Session {
   id           String   @id @default(uuid())
   token        String   @unique

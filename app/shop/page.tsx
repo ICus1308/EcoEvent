@@ -46,21 +46,12 @@ const LISTING_TYPE_LABELS: Record<string, string> = {
   "SALE": "Chỉ Bán"
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  "ALL_STATUS": "Tất cả trạng thái",
-  "ON_SALE": "Đang giảm giá",
-  "FREE_BORROW": "Miễn phí mượn",
-  "NEW_ARRIVAL": "Hàng mới về",
-  "BEST_SELLER": "Bán chạy"
-};
-
 export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("ALL");
   const [listingType, setListingType] = useState("ALL_TYPES");
-  const [status, setStatus] = useState("ALL_STATUS");
 
   // Fetch real items from REST API (Pure Database Single Source of Truth)
   useEffect(() => {
@@ -100,13 +91,9 @@ export default function ShopPage() {
       // 3. Listing Type Filter
       const matchesListingType = listingType === "ALL_TYPES" || product.listingType === listingType;
 
-      // 4. Status Tag Filter
-      let matchesStatus = true;
-      if (status !== "ALL_STATUS") matchesStatus = product.status === status;
-
-      return matchesSearch && matchesCategory && matchesListingType && matchesStatus;
+      return matchesSearch && matchesCategory && matchesListingType;
     });
-  }, [products, searchQuery, category, listingType, status]);
+  }, [products, searchQuery, category, listingType]);
 
   return (
     <div className="container mx-auto p-4 md:p-8">
@@ -115,15 +102,10 @@ export default function ShopPage() {
           <h1 className="text-3xl font-bold tracking-tight text-green-900 dark:text-green-400">Chợ Sinh Thái Eco-Gear</h1>
           <p className="text-muted-foreground mt-1">Thuê, mua hoặc mượn thiết bị bền vững cho sự kiện tiếp theo của bạn.</p>
         </div>
-        <Link href="/dashboard/inventory">
-          <Button className="bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all duration-300">
-            + Đăng Niêm Yết Mới
-          </Button>
-        </Link>
       </div>
 
       {/* Advanced Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 bg-card p-4 rounded-xl shadow-sm border">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 bg-card p-4 rounded-xl shadow-sm border">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -151,17 +133,6 @@ export default function ShopPage() {
           </SelectTrigger>
           <SelectContent>
             {Object.entries(LISTING_TYPE_LABELS).map(([key, label]) => (
-              <SelectItem key={key} value={key}>{label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select value={status} onValueChange={(val) => val && setStatus(val)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Trạng thái">{STATUS_LABELS[status]}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(STATUS_LABELS).map(([key, label]) => (
               <SelectItem key={key} value={key}>{label}</SelectItem>
             ))}
           </SelectContent>
@@ -210,12 +181,6 @@ export default function ShopPage() {
                       >
                         {product.listingType === 'SALE' ? 'BÁN' : 'THUÊ'}
                       </Badge>
-                      {product.status === 'ON_SALE' && (
-                        <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">GIẢM GIÁ</Badge>
-                      )}
-                      {product.status === 'BEST_SELLER' && (
-                        <Badge className="absolute top-2 left-2 bg-yellow-500 hover:bg-yellow-600 text-yellow-950">BÁN CHẠY</Badge>
-                      )}
                       {product.stock <= 0 && (
                         <Badge className="absolute bottom-2 left-2 bg-slate-900/80 text-white">HẾT HÀNG</Badge>
                       )}
@@ -280,11 +245,6 @@ export default function ShopPage() {
           <p className="text-muted-foreground text-sm max-w-md mb-6">
             Cửa hàng hiện đang trống vì tất cả dữ liệu giả đã được dọn dẹp hoàn toàn. Hãy là người đầu tiên đăng niêm yết vật phẩm sinh thái!
           </p>
-          <Link href="/dashboard/inventory">
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl px-6 shadow-md">
-              + Đăng Bán / Cho Thuê Vật Phẩm Đầu Tiên
-            </Button>
-          </Link>
         </motion.div>
       )}
 
@@ -302,7 +262,6 @@ export default function ShopPage() {
               setSearchQuery("");
               setCategory("ALL");
               setListingType("ALL_TYPES");
-              setStatus("ALL_STATUS");
             }}
           >
             Xóa bộ lọc tìm kiếm

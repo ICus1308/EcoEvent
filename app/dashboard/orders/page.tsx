@@ -72,16 +72,7 @@ export default function OrdersDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-16">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <BackButton label="Quay về Trang Chủ" />
-          <div className="flex items-center gap-2 font-bold text-slate-800">
-            <Calendar className="h-5 w-5 text-emerald-600" />
-            <span>Theo Dõi Đơn Hàng & Đồ Thuê</span>
-          </div>
-        </div>
-      </header>
+
 
       <main className="max-w-6xl mx-auto px-4 pt-8">
         <div className="mb-8">

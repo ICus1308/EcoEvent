@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
-import { createClient } from "@/lib/supabase/server";
+import { sendOtpEmail } from "@/lib/mailer";
 
 export async function POST(req: Request) {
   try {
@@ -26,7 +27,7 @@ export async function POST(req: Request) {
     const normalizedUsername = username.toLowerCase().trim();
     const cleanFullname = fullname.trim();
 
-    // Check if email or username already exists in Prisma DB
+    // 1. Check if user already exists in main User table
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -49,51 +50,69 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1. Trigger Supabase Auth Signup (sends confirmation email automatically via Supabase default provider)
-    const supabase = await createClient();
-    const origin = req.headers.get("origin") || "http://localhost:3000";
-    
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: normalizedEmail,
-      password,
-      options: {
-        emailRedirectTo: `${origin}/auth/callback`,
-        data: {
-          username: normalizedUsername,
-          fullname: cleanFullname,
-          role
-        }
-      }
+    // 2. Lazy Cleanup of expired pending registration requests
+    await prisma.pendingRegistration.deleteMany({
+      where: { expiresAt: { lt: new Date() } }
+    }).catch(() => {});
+
+    // 3. Rate Limiting: Prevent requesting a new OTP within 60 seconds (Anti-Spam)
+    const existingPending = await prisma.pendingRegistration.findUnique({
+      where: { email: normalizedEmail }
     });
 
-    if (authError) {
-      console.error("Supabase Auth SignUp Error:", authError);
-      return NextResponse.json(
-        { error: authError.message || "Không thể đăng ký với Supabase Auth." },
-        { status: 400 }
-      );
+    if (existingPending) {
+      const timeElapsed = (Date.now() - new Date(existingPending.createdAt).getTime()) / 1000;
+      if (timeElapsed < 60) {
+        const waitTime = Math.ceil(60 - timeElapsed);
+        return NextResponse.json(
+          { error: `Vui lòng đợi ${waitTime} giây trước khi yêu cầu mã OTP mới.` },
+          { status: 429 }
+        );
+      }
     }
 
+    // 4. Cryptographically Secure 6-digit OTP Generation & Hashing
+    const otpCode = crypto.randomInt(100000, 1000000).toString();
+    const otpHash = await bcrypt.hash(otpCode, 10);
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // 2. Create user record in Prisma DB (isVerified = false until email confirmation link is clicked)
-    const user = await prisma.user.create({
-      data: {
-        id: authData.user?.id || undefined,
-        username: normalizedUsername,
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes TTL
+
+    const userData = {
+      passwordHash,
+      fullname: cleanFullname,
+      username: normalizedUsername,
+      role
+    };
+
+    // 5. Store pending registration in database using Upsert (prevents race conditions)
+    await prisma.pendingRegistration.upsert({
+      where: { email: normalizedEmail },
+      update: {
+        userData,
+        otpHash,
+        attempts: 0,
+        expiresAt,
+        createdAt: new Date()
+      },
+      create: {
         email: normalizedEmail,
-        fullname: cleanFullname,
-        passwordHash,
-        role: role as any,
-        isVerified: false
+        userData,
+        otpHash,
+        attempts: 0,
+        expiresAt
       }
     });
+
+    // 6. Send OTP via Nodemailer SMTP Transport
+    await sendOtpEmail(normalizedEmail, otpCode);
 
     return NextResponse.json({
       success: true,
-      requireVerification: true,
-      message: "Đăng ký thành công! Vui lòng kiểm tra hộp thư đến (Inbox hoặc Spam) để xác minh tài khoản.",
-      email: normalizedEmail
+      requireOtp: true,
+      message: "Mã xác thực 6 chữ số đã được gửi tới email của bạn!",
+      email: normalizedEmail,
+      otpDebug: process.env.NODE_ENV !== "production" ? otpCode : undefined
     });
   } catch (error: any) {
     console.error("Register Error:", error);

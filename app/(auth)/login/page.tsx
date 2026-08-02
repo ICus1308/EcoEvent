@@ -196,12 +196,7 @@ export default function LoginPage() {
             </div>
             
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Mật khẩu</label>
-                <Link href="#" className="text-xs text-green-600 hover:underline">
-                  Quên mật khẩu?
-                </Link>
-              </div>
+              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Mật khẩu</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                 <Input 
@@ -212,6 +207,11 @@ export default function LoginPage() {
                   required 
                   className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-green-600 focus-visible:border-green-600 placeholder:text-slate-400" 
                 />
+              </div>
+              <div className="flex justify-end pt-1">
+                <Link href="/forgot-password" className="text-xs font-semibold text-green-600 hover:text-green-700 hover:underline transition-colors">
+                  Quên mật khẩu?
+                </Link>
               </div>
             </div>
             

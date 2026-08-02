@@ -67,8 +67,12 @@ export default function RegisterPage() {
         return;
       }
 
-      setSentSuccess(true);
-      setCooldown(60); // Start 60s cooldown for resend button
+      if (data.requireOtp) {
+        router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
+      } else {
+        setSentSuccess(true);
+        setCooldown(60);
+      }
     } catch (err) {
       console.error("Register client error:", err);
       setErrorMessage("Không thể kết nối đến máy chủ.");

@@ -32,8 +32,10 @@ export async function GET(req: Request) {
     }
 
     if (!currentUserId) {
-      const demoUser = await prisma.user.findFirst();
-      currentUserId = demoUser ? demoUser.id : "user-demo-1";
+      return NextResponse.json({
+        success: true,
+        orders: []
+      });
     }
 
     const orders = await prisma.bookingOrder.findMany({

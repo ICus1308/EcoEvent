@@ -22,6 +22,7 @@ export default function CreateProductPage() {
   const { user } = useAuth();
   
   const [loading, setLoading] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -44,6 +45,35 @@ export default function CreateProductPage() {
     const prefix = listingType === "SALE" ? "ECO-SALE-" : "ECO-RENT-";
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     setCode(prefix + randomNum);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageUploading(true);
+    setErrorMessage("");
+    
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setImageUrl(data.url);
+      } else {
+        setErrorMessage(data.error || "Lỗi upload ảnh.");
+      }
+    } catch (err) {
+      setErrorMessage("Không thể kết nối đến máy chủ upload.");
+    } finally {
+      setImageUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -399,24 +429,25 @@ export default function CreateProductPage() {
             <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">4. Hình Ảnh & Đặc Tính Sinh Thái</h3>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Đường Dẫn Hình Ảnh (Image URL) <span className="text-red-500">*</span></label>
+              <label className="text-xs font-bold text-slate-700">Tải Lên Hình Ảnh <span className="text-red-500">*</span></label>
               <div className="relative">
                 <ImageIcon className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
                 <Input
-                  type="url"
-                  placeholder="https://images.unsplash.com/..."
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  required
-                  className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 rounded-xl text-sm"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={imageUploading}
+                  className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 rounded-xl text-sm file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
                 />
               </div>
-              <p className="text-[11px] text-slate-500">Bạn có thể dán link Unsplash hoặc link ảnh trực tiếp.</p>
+              <p className="text-[11px] text-slate-500">
+                {imageUploading ? "Đang tải ảnh lên..." : "Hỗ trợ định dạng JPG, PNG, WEBP."}
+              </p>
             </div>
 
             {imageUrl && (
-              <div className="mt-2 w-32 h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
-                <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
+              <div className="mt-2 w-32 h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 shadow-sm relative group">
+                <img src={imageUrl} alt="Preview" className="w-full h-full object-cover transition-transform group-hover:scale-105" />
               </div>
             )}
 

@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { sendOtpEmail } from "@/lib/mailer";
 
 export async function POST(req: Request) {
@@ -15,32 +17,51 @@ export async function POST(req: Request) {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
-    
 
-    const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
-    if (!user) {
-      return NextResponse.json({ error: "Không tìm thấy tài khoản với email này." }, { status: 404 });
+    // 1. Find existing pending registration
+    const pendingRecord = await prisma.pendingRegistration.findUnique({
+      where: { email: normalizedEmail }
+    });
+
+    if (!pendingRecord) {
+      return NextResponse.json(
+        { error: "Phiên đăng ký đã hết hạn hoặc không tồn tại. Vui lòng quay lại trang Đăng ký." },
+        { status: 400 }
+      );
     }
 
-    // Generate new 6-digit OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    // 2. Rate Limiting: Prevent requesting a new OTP within 60 seconds (Anti-Spam)
+    const timeElapsed = (Date.now() - new Date(pendingRecord.createdAt).getTime()) / 1000;
+    if (timeElapsed < 60) {
+      const waitTime = Math.ceil(60 - timeElapsed);
+      return NextResponse.json(
+        { error: `Vui lòng đợi ${waitTime} giây trước khi yêu cầu mã OTP mới.` },
+        { status: 429 }
+      );
+    }
 
-    await prisma.verificationCode.deleteMany({ where: { email: normalizedEmail } }).catch(() => {});
-    await prisma.verificationCode.create({
+    // 3. Generate new 6-digit OTP & Hash
+    const otpCode = crypto.randomInt(100000, 1000000).toString();
+    const otpHash = await bcrypt.hash(otpCode, 10);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes TTL
+
+    // Update pending record
+    await prisma.pendingRegistration.update({
+      where: { id: pendingRecord.id },
       data: {
-        email: normalizedEmail,
-        code: otpCode,
-        expiresAt
+        otpHash,
+        attempts: 0,
+        expiresAt,
+        createdAt: new Date()
       }
     });
 
-    // Trigger Real SMTP Email Sending (with Console Fallback)
+    // 4. Send email via Nodemailer SMTP Transport
     await sendOtpEmail(normalizedEmail, otpCode);
 
     return NextResponse.json({
       success: true,
-      message: "Đã gửi lại mã xác thực 6 chữ số mới tới email của bạn!",
+      message: "Đã gửi lại mã xác nhận OTP 6 chữ số mới tới email của bạn!",
       otpDebug: process.env.NODE_ENV !== "production" ? otpCode : undefined
     });
   } catch (error: any) {
