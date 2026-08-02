@@ -126,7 +126,7 @@ export async function sendPasswordResetEmail(recipientEmail: string, otpCode: st
     await transporter.sendMail({
       from,
       to: recipientEmail,
-      subject: \`[EcoEvent Hub] Mã OTP đặt lại mật khẩu: \${otpCode}\`,
+      subject: `[EcoEvent Hub] Mã OTP đặt lại mật khẩu: ${otpCode}`,
       html: htmlContent
     });
 
