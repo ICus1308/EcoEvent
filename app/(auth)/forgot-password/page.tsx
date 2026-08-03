@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Leaf, Mail, Lock, ArrowRight, ArrowLeft, AlertCircle, CheckCircle2, Loader2, RefreshCw } from "lucide-react";
+import { motion } from "framer-motion";
+import { SlideUp, FadeIn } from "@/components/ui/animations";
 
 function ForgotPasswordContent() {
   const router = useRouter();
@@ -137,7 +139,7 @@ function ForgotPasswordContent() {
   };
 
   return (
-    <div className="w-full max-w-[420px] mx-auto lg:mx-0">
+    <SlideUp delay={0.2} className="w-full max-w-[420px] mx-auto lg:mx-0">
       <h2 className="text-3xl font-bold mb-2 text-slate-900 tracking-tight">Khôi Phục Mật Khẩu</h2>
       <p className="text-slate-500 mb-8 font-medium text-sm">
         {step === 1 ? "Nhập email của bạn để nhận mã OTP." : "Nhập mã OTP và mật khẩu mới của bạn."}
@@ -244,7 +246,7 @@ function ForgotPasswordContent() {
           <ArrowLeft className="h-4 w-4" /> Quay lại Đăng Nhập
         </Link>
       </div>
-    </div>
+    </SlideUp>
   );
 }
 
@@ -257,26 +259,32 @@ export default function ForgotPasswordPage() {
       <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-emerald-500 to-green-700 p-12 flex-col justify-between text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
         <div className="relative z-10">
-          <Link href="/" className="flex items-center gap-2 font-bold text-2xl tracking-tight hover:opacity-90 transition-opacity">
-            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
-              <Leaf className="h-6 w-6 text-white" />
-            </div>
-            EcoEvent Hub
-          </Link>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, ease: "easeOut" }}>
+            <Link href="/" className="flex items-center gap-2 font-bold text-2xl tracking-tight hover:opacity-90 transition-opacity w-fit">
+              <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
+                <Leaf className="h-6 w-6 text-white" />
+              </div>
+              EcoEvent Hub
+            </Link>
+          </motion.div>
           <div className="mt-24 xl:mt-32 max-w-xl">
-            <h1 className="text-5xl xl:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6">
-              Bảo Mật Bền Vững
-            </h1>
-            <p className="text-lg text-green-50/90 font-medium leading-relaxed max-w-md">
-              Chúng tôi luôn đảm bảo an toàn tuyệt đối cho tài khoản của bạn. Đặt lại mật khẩu dễ dàng qua hệ thống mã xác thực một lần (OTP).
-            </p>
+            <SlideUp delay={0.2}>
+              <h1 className="text-5xl xl:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6">
+                Bảo Mật Bền Vững
+              </h1>
+            </SlideUp>
+            <SlideUp delay={0.3}>
+              <p className="text-lg text-green-50/90 font-medium leading-relaxed max-w-md">
+                Chúng tôi luôn đảm bảo an toàn tuyệt đối cho tài khoản của bạn. Đặt lại mật khẩu dễ dàng qua hệ thống mã xác thực một lần (OTP).
+              </p>
+            </SlideUp>
           </div>
         </div>
       </div>
 
       {/* Right Column - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 xl:px-32 bg-white text-slate-900">
-        <div className="flex items-center justify-between lg:justify-start mb-8 lg:mb-12">
+        <FadeIn delay={0.1} className="flex items-center justify-between lg:justify-start mb-8 lg:mb-12">
           <Button variant="ghost" onClick={() => router.back()} className="text-slate-500 hover:text-slate-900 px-0 hover:bg-transparent">
             <ArrowLeft className="mr-2 h-4 w-4" /> Quay lại
           </Button>
@@ -286,7 +294,7 @@ export default function ForgotPasswordPage() {
             </div>
             EcoEvent
           </Link>
-        </div>
+        </FadeIn>
 
         <Suspense fallback={<div className="p-8 text-center text-sm font-medium">Đang tải...</div>}>
           <ForgotPasswordContent />

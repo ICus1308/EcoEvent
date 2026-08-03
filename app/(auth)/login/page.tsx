@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Leaf, Loader2, Mail, Lock, ArrowRight, ArrowLeft, AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
+import { motion } from "framer-motion";
+import { SlideUp, FadeIn, staggerContainerVariants, staggerItemVariants } from "@/components/ui/animations";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -100,38 +102,49 @@ export default function LoginPage() {
         <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
         
         <div className="relative z-10">
-          <Link href="/" className="flex items-center gap-2 font-bold text-2xl tracking-tight hover:opacity-90 transition-opacity">
-            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
-              <Leaf className="h-6 w-6 text-white" />
-            </div>
-            EcoEvent Hub
-          </Link>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, ease: "easeOut" }}>
+            <Link href="/" className="flex items-center gap-2 font-bold text-2xl tracking-tight hover:opacity-90 transition-opacity w-fit">
+              <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
+                <Leaf className="h-6 w-6 text-white" />
+              </div>
+              EcoEvent Hub
+            </Link>
+          </motion.div>
           
           <div className="mt-24 xl:mt-32 max-w-xl">
-            <h1 className="text-5xl xl:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6">
-              Chào Mừng Trở Lại!
-            </h1>
-            <p className="text-lg text-green-50/90 font-medium leading-relaxed max-w-md">
-              Đăng nhập để tiếp tục quản lý các sự kiện xanh, theo dõi đơn hàng thiết bị và kết nối với cộng đồng chia sẻ tài nguyên.
-            </p>
+            <SlideUp delay={0.2}>
+              <h1 className="text-5xl xl:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6">
+                Chào Mừng Trở Lại!
+              </h1>
+            </SlideUp>
+            <SlideUp delay={0.3}>
+              <p className="text-lg text-green-50/90 font-medium leading-relaxed max-w-md">
+                Đăng nhập để tiếp tục quản lý các sự kiện xanh, theo dõi đơn hàng thiết bị và kết nối với cộng đồng chia sẻ tài nguyên.
+              </p>
+            </SlideUp>
           </div>
           
-          <div className="mt-16 grid grid-cols-2 gap-4 max-w-md">
-            <div className="bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:bg-black/30 transition-colors">
+          <motion.div 
+            variants={staggerContainerVariants}
+            initial="hidden"
+            animate="show"
+            className="mt-16 grid grid-cols-2 gap-4 max-w-md"
+          >
+            <motion.div variants={staggerItemVariants} className="bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:bg-black/30 transition-colors">
               <h3 className="font-bold text-2xl mb-1 tracking-tight">An Toàn</h3>
               <p className="text-sm text-green-50/80 font-medium">Bảo mật tài khoản</p>
-            </div>
-            <div className="bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:bg-black/30 transition-colors">
+            </motion.div>
+            <motion.div variants={staggerItemVariants} className="bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:bg-black/30 transition-colors">
               <h3 className="font-bold text-2xl mb-1 tracking-tight">Nhanh Chóng</h3>
               <p className="text-sm text-green-50/80 font-medium">Quản lý liền mạch</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 
       {/* Right Column - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 xl:px-32 bg-white text-slate-900">
-        <div className="flex items-center justify-between lg:justify-start mb-8 lg:mb-12">
+        <FadeIn delay={0.1} className="flex items-center justify-between lg:justify-start mb-8 lg:mb-12">
           <Button 
             variant="ghost" 
             onClick={() => router.back()} 
@@ -146,9 +159,9 @@ export default function LoginPage() {
             </div>
             EcoEvent
           </Link>
-        </div>
+        </FadeIn>
 
-        <div className="w-full max-w-[420px] mx-auto lg:mx-0">
+        <SlideUp delay={0.2} className="w-full max-w-[420px] mx-auto lg:mx-0">
           <h2 className="text-3xl font-bold mb-2 text-slate-900 tracking-tight">Đăng Nhập</h2>
           <p className="text-slate-500 mb-8 font-medium text-sm">Truy cập vào tài khoản EcoEvent Hub của bạn.</p>
 
@@ -234,7 +247,7 @@ export default function LoginPage() {
               Đăng ký
             </Link>
           </div>
-        </div>
+        </SlideUp>
       </div>
     </div>
   );

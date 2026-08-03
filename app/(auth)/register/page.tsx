@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Leaf, Loader2, User, Mail, Lock, ArrowRight, ArrowLeft, AlertCircle, CheckCircle2, RefreshCw, Inbox } from "lucide-react";
 import { Role } from "@prisma/client";
+import { motion } from "framer-motion";
+import { SlideUp, FadeIn, staggerContainerVariants, staggerItemVariants } from "@/components/ui/animations";
 
 const ROLE_LABELS: Record<string, string> = {
   CUSTOMER: "Khách hàng (Lên kế hoạch, Thuê đồ)",
@@ -115,38 +117,49 @@ export default function RegisterPage() {
         <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
         
         <div className="relative z-10">
-          <Link href="/" className="flex items-center gap-2 font-bold text-2xl tracking-tight hover:opacity-90 transition-opacity">
-            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
-              <Leaf className="h-6 w-6 text-white" />
-            </div>
-            EcoEvent Hub
-          </Link>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, ease: "easeOut" }}>
+            <Link href="/" className="flex items-center gap-2 font-bold text-2xl tracking-tight hover:opacity-90 transition-opacity w-fit">
+              <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
+                <Leaf className="h-6 w-6 text-white" />
+              </div>
+              EcoEvent Hub
+            </Link>
+          </motion.div>
           
           <div className="mt-24 xl:mt-32 max-w-xl">
-            <h1 className="text-5xl xl:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6">
-              Tương lai của tổ chức sự kiện xanh.
-            </h1>
-            <p className="text-lg text-green-50/90 font-medium leading-relaxed max-w-md">
-              Tham gia cùng những nhà tiên phong sử dụng công nghệ AI để lên kế hoạch sự kiện và chia sẻ tài nguyên một cách bền vững, tiết kiệm chi phí trong thời gian thực.
-            </p>
+            <SlideUp delay={0.2}>
+              <h1 className="text-5xl xl:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6">
+                Tương lai của tổ chức sự kiện xanh.
+              </h1>
+            </SlideUp>
+            <SlideUp delay={0.3}>
+              <p className="text-lg text-green-50/90 font-medium leading-relaxed max-w-md">
+                Tham gia cùng những nhà tiên phong sử dụng công nghệ AI để lên kế hoạch sự kiện và chia sẻ tài nguyên một cách bền vững, tiết kiệm chi phí trong thời gian thực.
+              </p>
+            </SlideUp>
           </div>
           
-          <div className="mt-16 grid grid-cols-2 gap-4 max-w-md">
-            <div className="bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:bg-black/30 transition-colors">
+          <motion.div 
+            variants={staggerContainerVariants}
+            initial="hidden"
+            animate="show"
+            className="mt-16 grid grid-cols-2 gap-4 max-w-md"
+          >
+            <motion.div variants={staggerItemVariants} className="bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:bg-black/30 transition-colors">
               <h3 className="font-bold text-2xl mb-1 tracking-tight">AI Planner</h3>
               <p className="text-sm text-green-50/80 font-medium">Lên kế hoạch thông minh</p>
-            </div>
-            <div className="bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:bg-black/30 transition-colors">
+            </motion.div>
+            <motion.div variants={staggerItemVariants} className="bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:bg-black/30 transition-colors">
               <h3 className="font-bold text-2xl mb-1 tracking-tight">24/7</h3>
               <p className="text-sm text-green-50/80 font-medium">Chia sẻ tài nguyên</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 
       {/* Right Column - Form or Verification Success Notice */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 xl:px-32 bg-white text-slate-900">
-        <div className="flex items-center justify-between lg:justify-start mb-8 lg:mb-12">
+        <FadeIn delay={0.1} className="flex items-center justify-between lg:justify-start mb-8 lg:mb-12">
           <Button 
             variant="ghost" 
             onClick={() => router.push("/")} 
@@ -161,9 +174,9 @@ export default function RegisterPage() {
             </div>
             EcoEvent
           </Link>
-        </div>
+        </FadeIn>
 
-        <div className="w-full max-w-[420px] mx-auto lg:mx-0">
+        <SlideUp delay={0.2} className="w-full max-w-[420px] mx-auto lg:mx-0">
           {sentSuccess ? (
             /* Dedicated Please Check Inbox View */
             <div className="space-y-6">
@@ -323,7 +336,7 @@ export default function RegisterPage() {
               </div>
             </>
           )}
-        </div>
+        </SlideUp>
       </div>
     </div>
   );
