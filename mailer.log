@@ -1,0 +1,8 @@
+==========================================
+📧 [SMTP MAILER LOG]
+Recipient: test_1785767039957@example.com
+OTP Code: 764746
+Env vars: host=smtp.gmail.com, user=ecoevent.app@gmail.com, pass=***
+==========================================
+
+SUCCESS to test_1785767039957@example.com
