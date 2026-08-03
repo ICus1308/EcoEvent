@@ -31,7 +31,10 @@ export default function OrdersDashboard() {
     async function fetchOrders() {
       setLoading(true);
       try {
-        const res = await fetch("/api/orders");
+        const token = localStorage.getItem("sessionToken");
+        const res = await fetch("/api/orders", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
         const data = await res.json();
         if (res.ok && data.success && Array.isArray(data.orders)) {
           setOrders(data.orders);
@@ -61,12 +64,27 @@ export default function OrdersDashboard() {
   const handleReturnItem = async (id: string) => {
     if (!confirm("Xác nhận bạn đã bàn giao và trả lại thiết bị này cho nhà cung cấp?")) return;
     try {
+      const token = localStorage.getItem("sessionToken");
+      const res = await fetch("/api/orders", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ action: "RETURN_ITEM", orderId: id })
+      });
+      
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Lỗi cập nhật");
+      }
+
       setOrders((prev) =>
         prev.map((o) => (o.id === id ? { ...o, type: "rented", status: "COMPLETED" } : o))
       );
       alert("Đã ghi nhận yêu cầu trả thiết bị! Tiền cọc đã được hoàn trả lại ví của bạn.");
-    } catch (err) {
-      alert("Không thể cập nhật trạng thái đơn hàng");
+    } catch (err: any) {
+      alert("Không thể cập nhật trạng thái đơn hàng: " + err.message);
     }
   };
 

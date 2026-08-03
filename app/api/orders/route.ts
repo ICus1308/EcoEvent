@@ -18,17 +18,27 @@ export async function GET(req: Request) {
     const authHeader = req.headers.get("Authorization");
     let currentUserId: string | null = null;
 
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      try {
-        const token = authHeader.substring(7);
-        const decoded = JSON.parse(Buffer.from(token, "base64").toString("utf-8"));
-        if (decoded?.userId) currentUserId = decoded.userId;
-      } catch (e) {}
-    }
-
     const prisma = await getPrisma();
     if (!prisma) {
       return NextResponse.json({ success: false, error: "Không thể kết nối cơ sở dữ liệu" }, { status: 500 });
+    }
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      try {
+        const token = authHeader.substring(7);
+        
+        if (token.startsWith("demo-token-")) {
+          const encoded = token.replace("demo-token-", "");
+          const decoded = JSON.parse(Buffer.from(encoded, "base64url").toString("utf-8"));
+          if (decoded?.id) currentUserId = decoded.id;
+        } else {
+          const session = await prisma.session.findUnique({
+            where: { token },
+            select: { userId: true }
+          });
+          if (session?.userId) currentUserId = session.userId;
+        }
+      } catch (e) {}
     }
 
     if (!currentUserId) {
@@ -85,5 +95,61 @@ export async function GET(req: Request) {
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: "Lỗi máy chủ khi lấy danh sách đơn hàng" }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const authHeader = req.headers.get("Authorization");
+    let currentUserId: string | null = null;
+    const prisma = await getPrisma();
+    
+    if (!prisma) {
+      return NextResponse.json({ success: false, error: "Không thể kết nối cơ sở dữ liệu" }, { status: 500 });
+    }
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      try {
+        const token = authHeader.substring(7);
+        if (token.startsWith("demo-token-")) {
+          const encoded = token.replace("demo-token-", "");
+          const decoded = JSON.parse(Buffer.from(encoded, "base64url").toString("utf-8"));
+          if (decoded?.id) currentUserId = decoded.id;
+        } else {
+          const session = await prisma.session.findUnique({
+            where: { token },
+            select: { userId: true }
+          });
+          if (session?.userId) currentUserId = session.userId;
+        }
+      } catch (e) {}
+    }
+
+    if (!currentUserId) {
+      return NextResponse.json({ success: false, error: "Vui lòng đăng nhập" }, { status: 401 });
+    }
+
+    const body = await req.json().catch(() => ({}));
+    const { orderId, action } = body;
+
+    if (action === "RETURN_ITEM" && orderId) {
+      // Verify order belongs to user
+      const order = await prisma.bookingOrder.findUnique({ where: { id: orderId } });
+      if (!order || order.buyerId !== currentUserId) {
+        return NextResponse.json({ success: false, error: "Không tìm thấy đơn hàng hoặc không có quyền" }, { status: 403 });
+      }
+      
+      // Update order status to COMPLETED
+      await prisma.bookingOrder.update({
+        where: { id: orderId },
+        data: { status: "COMPLETED" }
+      });
+      
+      return NextResponse.json({ success: true, message: "Đã cập nhật trạng thái đơn hàng" });
+    }
+
+    return NextResponse.json({ success: false, error: "Hành động không hợp lệ" }, { status: 400 });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: "Lỗi máy chủ khi cập nhật đơn hàng" }, { status: 500 });
   }
 }
