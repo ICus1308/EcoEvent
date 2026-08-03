@@ -12,32 +12,39 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file received." }, { status: 400 });
     }
 
-    // Convert the File object to a Buffer
     const buffer = Buffer.from(await file.arrayBuffer());
-
-    // Generate a unique filename using timestamp
+    
+    // Generate a unique filename
     const timestamp = Date.now();
-    const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_"); // sanitize filename
+    const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
     const filename = `${timestamp}-${originalName}`;
 
-    // Define the upload directory path (public/uploads)
-    const uploadDir = path.join(process.cwd(), "public/uploads");
+    // Upload to Supabase Storage (requires a public 'uploads' bucket)
+    const { supabase } = await import("@/lib/supabase");
+    
+    const { data, error } = await supabase.storage
+      .from("uploads")
+      .upload(filename, buffer, {
+        contentType: file.type || "image/jpeg",
+        upsert: false,
+      });
 
-    // Ensure the upload directory exists
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
+    if (error) {
+      console.error("Supabase Storage error:", error);
+      return NextResponse.json(
+        { error: `Không thể tải ảnh lên Supabase: ${error.message}. Hãy chắc chắn bạn đã tạo bucket 'uploads' ở chế độ Public.` }, 
+        { status: 500 }
+      );
     }
 
-    // Write the file to the public/uploads directory
-    const filePath = path.join(uploadDir, filename);
-    await writeFile(filePath, buffer);
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from("uploads")
+      .getPublicUrl(filename);
 
-    // Return the public URL for the uploaded file
-    const fileUrl = `/uploads/${filename}`;
-
-    return NextResponse.json({ success: true, url: fileUrl });
-  } catch (error) {
+    return NextResponse.json({ success: true, url: publicUrl });
+  } catch (error: any) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: "Failed to upload file." }, { status: 500 });
+    return NextResponse.json({ error: "Lỗi máy chủ khi tải ảnh lên." }, { status: 500 });
   }
 }
