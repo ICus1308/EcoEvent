@@ -66,11 +66,15 @@ export default function CreateProductPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setImageUrl(data.url);
+        setErrorMessage(""); // clear any previous errors
       } else {
-        setErrorMessage(data.error || "Lỗi upload ảnh.");
+        const errorText = data.error || "Lỗi upload ảnh.";
+        setErrorMessage(errorText);
+        alert("LỖI TẢI ẢNH: " + errorText + "\n\nVui lòng xem hướng dẫn để mở quyền (Policy) trên Supabase.");
       }
     } catch (err) {
       setErrorMessage("Không thể kết nối đến máy chủ upload.");
+      alert("Không thể kết nối đến máy chủ upload.");
     } finally {
       setImageUploading(false);
     }
@@ -94,7 +98,7 @@ export default function CreateProductPage() {
       return;
     }
     if (!imageUrl.trim()) {
-      setErrorMessage("Vui lòng cung cấp URL hình ảnh sản phẩm.");
+      setErrorMessage("Hình ảnh chưa được tải lên thành công. Hãy thử lại hoặc sửa quyền Supabase theo hướng dẫn!");
       setLoading(false);
       return;
     }
