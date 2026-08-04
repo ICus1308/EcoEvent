@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Headset, X, Send, Image, Video, User, Bot, Loader2, Paperclip, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/AuthProvider";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ChatMessage {
   id: string;
@@ -224,8 +225,15 @@ export default function TechSupportBubble({
       </button>
 
       {/* Expandable Chat Window */}
-      {isOpen && (
-        <div className="fixed bottom-24 right-6 w-[90vw] sm:w-[380px] h-[520px] bg-white border border-slate-200 rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50 animate-in fade-in slide-in-from-bottom-4 duration-200">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.85, y: 20 }}
+            transition={{ type: "spring", damping: 22, stiffness: 320 }}
+            className="fixed bottom-24 right-6 w-[90vw] sm:w-[380px] h-[520px] bg-white border border-slate-200 rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50"
+          >
           
           {/* Header */}
           <div className="bg-gradient-to-r from-emerald-700 via-teal-700 to-indigo-800 p-4 text-white flex items-center justify-between">
@@ -372,8 +380,9 @@ export default function TechSupportBubble({
             </button>
           </form>
 
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

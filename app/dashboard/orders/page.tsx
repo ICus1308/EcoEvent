@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Calendar, ShieldCheck, Clock, CheckCircle2, ShoppingBag, RotateCcw, Loader2 } from "lucide-react";
 import BackButton from "@/components/BackButton";
+import { AnimatedSection, HoverCard } from "@/components/ui/animations";
 
 interface OrderItem {
   id: string;
@@ -91,8 +92,7 @@ export default function OrdersDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-16">
 
-
-      <main className="max-w-6xl mx-auto px-4 pt-8">
+      <AnimatedSection className="max-w-6xl mx-auto px-4 pt-8">
         <div className="mb-8">
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Nhật ký mua hàng & thuê thiết bị</h1>
           <p className="text-slate-500 font-medium text-sm mt-1">
@@ -161,7 +161,7 @@ export default function OrdersDashboard() {
                   </div>
                 ) : (
                   activeRentals.map((rental) => (
-                    <div
+                    <HoverCard
                       key={rental.id}
                       className="bg-white rounded-2xl border border-emerald-200 p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
                     >
@@ -208,7 +208,7 @@ export default function OrdersDashboard() {
                           <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Báo trả đồ & hoàn cọc
                         </Button>
                       </div>
-                    </div>
+                    </HoverCard>
                   ))
                 )}
               </div>
@@ -225,7 +225,7 @@ export default function OrdersDashboard() {
                   </div>
                 ) : (
                   purchasedOrders.map((order) => (
-                    <div key={order.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex items-center justify-between">
+                    <HoverCard key={order.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <img src={order.imageUrl || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600"} alt={order.productName} className="w-20 h-20 rounded-xl object-cover border border-slate-100" />
                         <div>
@@ -239,7 +239,7 @@ export default function OrdersDashboard() {
                       <div className="text-right font-extrabold text-blue-700 text-lg">
                         {order.totalAmount.toLocaleString("vi-VN")}đ
                       </div>
-                    </div>
+                    </HoverCard>
                   ))
                 )}
               </div>
@@ -256,7 +256,7 @@ export default function OrdersDashboard() {
                   </div>
                 ) : (
                   pastRentals.map((past) => (
-                    <div key={past.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex items-center justify-between">
+                    <HoverCard key={past.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <img src={past.imageUrl || "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=600"} alt={past.productName} className="w-20 h-20 rounded-xl object-cover border border-slate-100" />
                         <div>
@@ -274,14 +274,14 @@ export default function OrdersDashboard() {
                           Đã hoàn tất
                         </span>
                       </div>
-                    </div>
+                    </HoverCard>
                   ))
                 )}
               </div>
             )}
           </>
         )}
-      </main>
+      </AnimatedSection>
     </div>
   );
 }

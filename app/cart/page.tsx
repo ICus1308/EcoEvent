@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag, Trash2, ShieldCheck, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import BackButton from "@/components/BackButton";
+import { AnimatedSection, HoverCard } from "@/components/ui/animations";
 
 export default function CartPage() {
   const router = useRouter();
@@ -98,8 +99,7 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-16">
 
-
-      <main className="max-w-6xl mx-auto px-4 pt-8">
+      <AnimatedSection className="max-w-6xl mx-auto px-4 pt-8">
         <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-8">
           Giỏ hàng ({items.length})
         </h1>
@@ -138,7 +138,7 @@ export default function CartPage() {
                 const isRent = prod.listingType === "RENT";
 
                 return (
-                  <div
+                  <HoverCard
                     key={item.id}
                     className="p-5 bg-white rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
                   >
@@ -195,7 +195,7 @@ export default function CartPage() {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                  </div>
+                  </HoverCard>
                 );
               })}
             </div>
@@ -247,7 +247,7 @@ export default function CartPage() {
             </div>
           </div>
         )}
-      </main>
+      </AnimatedSection>
     </div>
   );
 }

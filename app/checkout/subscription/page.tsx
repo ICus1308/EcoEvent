@@ -140,8 +140,8 @@ function SubscriptionCheckoutContent() {
           
           <div className="space-y-2">
             <Link href="/dashboard/inventory/new" className="block">
-              <Button className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md">
-                Đăng Sản Phẩm Ngay
+              <Button className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md cursor-pointer">
+                Thêm sản phẩm
               </Button>
             </Link>
             <Link href="/pricing" className="block">

@@ -200,7 +200,7 @@ export default function CreateProductPage() {
             <div className="bg-emerald-600 p-1.5 rounded-lg text-white">
               <Leaf className="h-4 w-4" />
             </div>
-            <span>Đăng Niêm Yết Mới</span>
+            <span>Thêm sản phẩm</span>
           </div>
         </div>
       </header>
@@ -470,9 +470,9 @@ export default function CreateProductPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[15px] shadow-md hover:shadow-lg transition-all"
+            className="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[15px] shadow-md hover:shadow-lg transition-all cursor-pointer"
           >
-            {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Niêm Yết Sản Phẩm Ngay"}
+            {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Thêm sản phẩm"}
           </Button>
 
         </form>

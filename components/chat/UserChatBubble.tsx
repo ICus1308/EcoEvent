@@ -5,6 +5,7 @@ import { MessageSquare, X, Send, Paperclip, Loader2, Image, Video, User, Chevron
 import { useAuth } from "@/components/AuthProvider";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ConversationItem {
   id: string;
@@ -243,8 +244,15 @@ export default function UserChatBubble({
       </button>
 
       {/* Expandable Chat Modal */}
-      {isOpen && (
-        <div className="fixed bottom-24 right-6 w-[90vw] sm:w-[380px] h-[520px] bg-white border border-slate-200 rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50 animate-in fade-in slide-in-from-bottom-4 duration-200">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.85, y: 20 }}
+            transition={{ type: "spring", damping: 22, stiffness: 320 }}
+            className="fixed bottom-24 right-6 w-[90vw] sm:w-[380px] h-[520px] bg-white border border-slate-200 rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50"
+          >
           
           {/* Header */}
           <div className="bg-slate-900 p-4 text-white flex items-center justify-between">
@@ -423,8 +431,9 @@ export default function UserChatBubble({
             </div>
           )}
 
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

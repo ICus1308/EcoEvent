@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Tag, Calendar, Trash2, Edit3, PauseCircle, PlayCircle, Package, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import BackButton from "@/components/BackButton";
+import { AnimatedSection, HoverCard } from "@/components/ui/animations";
 
 export default function InventoryDashboard() {
   const { user } = useAuth();
@@ -93,8 +94,7 @@ export default function InventoryDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-16">
 
-
-      <main className="max-w-6xl mx-auto px-4 pt-8">
+      <AnimatedSection className="max-w-6xl mx-auto px-4 pt-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Quản lý kho hàng & niêm yết</h1>
@@ -104,8 +104,8 @@ export default function InventoryDashboard() {
           </div>
 
           <Link href="/shop/create">
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl px-5 h-11 shadow-sm">
-              <Plus className="h-4 w-4 mr-2" /> Thêm niêm yết
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl px-5 h-11 shadow-sm cursor-pointer">
+              <Plus className="h-4 w-4 mr-2" /> Thêm sản phẩm
             </Button>
           </Link>
         </div>
@@ -159,18 +159,18 @@ export default function InventoryDashboard() {
             </div>
             <h3 className="text-lg font-bold text-slate-800 mb-1">Chưa có sản phẩm nào</h3>
             <p className="text-slate-500 text-sm max-w-sm mb-6">
-              Bạn chưa đăng sản phẩm nào thuộc mục này. Hãy bắt đầu bằng cách thêm niêm yết mới.
+              Bạn chưa đăng sản phẩm nào thuộc mục này. Hãy bắt đầu bằng cách thêm sản phẩm mới.
             </p>
             <Link href="/shop/create">
-              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl">
-                <Plus className="h-4 w-4 mr-2" /> Đăng sản phẩm mới
+              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl cursor-pointer">
+                <Plus className="h-4 w-4 mr-2" /> Thêm sản phẩm
               </Button>
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProducts.map((item) => (
-              <div
+              <HoverCard
                 key={item.id}
                 className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
               >
@@ -277,11 +277,11 @@ export default function InventoryDashboard() {
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
-              </div>
+              </HoverCard>
             ))}
           </div>
         )}
-      </main>
+      </AnimatedSection>
     </div>
   );
 }

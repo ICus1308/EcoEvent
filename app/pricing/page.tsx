@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Check, X, Sparkles, Zap, Shield, Crown, ArrowLeft, Loader2, Star, CheckCircle2 } from "lucide-react";
+import { AnimatedSection, HoverCard } from "@/components/ui/animations";
 
 interface PlanData {
   id: string;
@@ -116,6 +117,7 @@ export default function PricingPage() {
 
       {/* Pricing Cards */}
       <main className="max-w-6xl mx-auto px-4 -mt-12 relative z-20">
+        <AnimatedSection>
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-200 shadow-sm">
             <Loader2 className="h-8 w-8 text-emerald-600 animate-spin mb-3" />
@@ -125,7 +127,7 @@ export default function PricingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
             
             {/* GÓI CƠ BẢN (FREE) */}
-            <div className={`bg-white rounded-3xl border ${currentTier === "FREE" ? "border-emerald-500 shadow-emerald-100/50" : "border-slate-200"} p-8 shadow-sm flex flex-col justify-between relative`}>
+            <HoverCard className={`bg-white rounded-3xl border ${currentTier === "FREE" ? "border-emerald-500 shadow-emerald-100/50" : "border-slate-200"} p-8 shadow-sm flex flex-col justify-between relative`}>
               {currentTier === "FREE" && (
                 <div className="absolute -top-3.5 right-6 bg-slate-900 text-white text-[10px] font-bold font-numeric uppercase px-3 py-1 rounded-full border border-slate-700">
                   Gói hiện tại
@@ -183,10 +185,10 @@ export default function PricingPage() {
               >
                 {currentTier === "FREE" ? "Gói đang sử dụng" : "Dùng miễn phí"}
               </Button>
-            </div>
+            </HoverCard>
 
             {/* GÓI PLUS (PRO - POPULAR) */}
-            <div className={`bg-gradient-to-b from-emerald-950 via-slate-900 to-slate-900 text-white rounded-3xl border-2 border-emerald-500 p-8 shadow-xl flex flex-col justify-between relative transform md:-translate-y-2`}>
+            <HoverCard className={`bg-gradient-to-b from-emerald-950 via-slate-900 to-slate-900 text-white rounded-3xl border-2 border-emerald-500 p-8 shadow-xl flex flex-col justify-between relative transform md:-translate-y-2`}>
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold font-numeric text-[11px] uppercase tracking-wider px-4 py-1 rounded-full shadow-lg flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" /> Phổ biến nhất
               </div>
@@ -251,10 +253,10 @@ export default function PricingPage() {
               >
                 {currentTier === "PLUS" ? "Gói hiện tại" : "Nâng cấp gói Plus"}
               </Button>
-            </div>
+            </HoverCard>
 
             {/* GÓI PREMIUM VENDOR */}
-            <div className={`bg-white rounded-3xl border ${currentTier === "PREMIUM" ? "border-amber-500 shadow-amber-100/50" : "border-slate-200"} p-8 shadow-sm flex flex-col justify-between relative`}>
+            <HoverCard className={`bg-white rounded-3xl border ${currentTier === "PREMIUM" ? "border-amber-500 shadow-amber-100/50" : "border-slate-200"} p-8 shadow-sm flex flex-col justify-between relative`}>
               {currentTier === "PREMIUM" && (
                 <div className="absolute -top-3.5 right-6 bg-amber-500 text-slate-950 text-[10px] font-bold font-numeric uppercase px-3 py-1 rounded-full">
                   Gói hiện tại
@@ -313,13 +315,14 @@ export default function PricingPage() {
               >
                 {currentTier === "PREMIUM" ? "Gói hiện tại" : "Đăng ký Premium Vendor"}
               </Button>
-            </div>
+            </HoverCard>
 
           </div>
         )}
+        </AnimatedSection>
 
         {/* Feature Comparison Table */}
-        <div className="mt-20 bg-white rounded-3xl border border-slate-200 p-8 shadow-sm overflow-hidden">
+        <AnimatedSection delay={0.2} className="mt-20 bg-white rounded-3xl border border-slate-200 p-8 shadow-sm overflow-hidden">
           <h2 className="text-2xl font-bold font-heading text-slate-900 mb-6 text-center">
             So sánh chi tiết các quyền lợi
           </h2>
@@ -380,7 +383,7 @@ export default function PricingPage() {
               </tbody>
             </table>
           </div>
-        </div>
+        </AnimatedSection>
 
       </main>
     </div>
