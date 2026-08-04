@@ -16,6 +16,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   // Unverified state & Resend email handling
@@ -35,7 +36,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ emailOrUsername, password })
+        body: JSON.stringify({ emailOrUsername, password, rememberMe })
       });
 
       let data: any = {};
@@ -61,7 +62,7 @@ export default function LoginPage() {
         return;
       }
 
-      loginToken(data.token, data.user);
+      loginToken(data.token, data.user, rememberMe);
     } catch (err) {
       console.error("Login client error:", err);
       setErrorMessage("Không thể kết nối đến máy chủ.");
@@ -221,7 +222,16 @@ export default function LoginPage() {
                   className="pl-10 bg-slate-50/50 border-slate-200 text-slate-900 h-11 rounded-xl focus-visible:ring-1 focus-visible:ring-green-600 focus-visible:border-green-600 placeholder:text-slate-400" 
                 />
               </div>
-              <div className="flex justify-end pt-1">
+              <div className="flex items-center justify-between pt-1">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 rounded text-green-600 focus:ring-green-600 border-slate-300 cursor-pointer"
+                  />
+                  <span className="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition-colors">Ghi nhớ đăng nhập</span>
+                </label>
                 <Link href="/forgot-password" className="text-xs font-semibold text-green-600 hover:text-green-700 hover:underline transition-colors">
                   Quên mật khẩu?
                 </Link>

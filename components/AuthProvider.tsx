@@ -14,7 +14,7 @@ export interface AuthUser {
 interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
-  loginToken: (token: string, userData: AuthUser) => void;
+  loginToken: (token: string, userData: AuthUser, rememberMe?: boolean) => void;
   logout: () => Promise<void>;
   checkSession: () => Promise<void>;
 }
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkSession = async () => {
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("sessionToken") : null;
+      const token = typeof window !== "undefined" ? (localStorage.getItem("sessionToken") || sessionStorage.getItem("sessionToken")) : null;
       if (!token) {
         setUser(null);
         setLoading(false);
@@ -63,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Token expired, invalid or non-JSON response
       localStorage.removeItem("sessionToken");
+      sessionStorage.removeItem("sessionToken");
       setUser(null);
     } catch (error) {
       console.error("Failed to check auth session:", error);
@@ -89,14 +90,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, pathname, router]);
 
-  const loginToken = (token: string, userData: AuthUser) => {
-    localStorage.setItem("sessionToken", token);
+  const loginToken = (token: string, userData: AuthUser, rememberMe: boolean = true) => {
+    if (rememberMe) {
+      localStorage.setItem("sessionToken", token);
+      sessionStorage.removeItem("sessionToken");
+      document.cookie = `sessionToken=${token}; path=/; max-age=${30 * 24 * 60 * 60}`;
+    } else {
+      sessionStorage.setItem("sessionToken", token);
+      localStorage.removeItem("sessionToken");
+      document.cookie = `sessionToken=${token}; path=/`; // Session cookie
+    }
     setUser(userData);
     router.push("/");
   };
 
   const logout = async () => {
-    const token = localStorage.getItem("sessionToken");
+    const token = localStorage.getItem("sessionToken") || sessionStorage.getItem("sessionToken");
     if (token) {
       await fetch("/api/auth/logout", {
         method: "POST",
@@ -106,6 +115,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }).catch(() => {});
     }
     localStorage.removeItem("sessionToken");
+    sessionStorage.removeItem("sessionToken");
+    document.cookie = "sessionToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     setUser(null);
     router.push("/login");
   };

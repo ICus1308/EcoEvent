@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { emailOrUsername, password } = body;
+    const { emailOrUsername, password, rememberMe } = body;
 
     if (!emailOrUsername || !password) {
       return NextResponse.json(
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
 
       // Create session in Prisma DB for session token compatibility
       const token = crypto.randomUUID();
-      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      const expiresAt = new Date(Date.now() + (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000);
       await prisma.session.create({
         data: {
           token,
@@ -113,7 +113,7 @@ export async function POST(req: Request) {
         }
 
         const token = crypto.randomUUID();
-        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        const expiresAt = new Date(Date.now() + (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000);
 
         await prisma.session.create({
           data: {
