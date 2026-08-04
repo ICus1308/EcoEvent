@@ -119,7 +119,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       }
 
       if (res.ok && data.success) {
-        router.push("/dashboard/inventory");
+        router.push(`/shop/${productId}`);
       } else {
         setErrorMsg(data.error || "Không thể cập nhật sản phẩm");
       }
@@ -146,12 +146,19 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/dashboard/inventory">
             <Button variant="ghost" size="sm" className="text-slate-600 hover:text-slate-900">
-              <ArrowLeft className="h-4 w-4 mr-2" /> Hủy & Quay Là Kho Hàng
+              <ArrowLeft className="h-4 w-4 mr-2" /> Quay lại
             </Button>
           </Link>
-          <div className="flex items-center gap-2 text-sm font-bold text-emerald-700">
-            <Leaf className="h-4 w-4" />
-            Chỉnh Sửa Niêm Yết
+          <div className="flex items-center gap-4">
+            <Link href={`/shop/${productId}`}>
+              <Button variant="outline" size="sm" className="border-emerald-200 text-emerald-700 hover:bg-emerald-50">
+                Xem trên Chợ
+              </Button>
+            </Link>
+            <div className="flex items-center gap-2 text-sm font-bold text-emerald-700">
+              <Leaf className="h-4 w-4" />
+              Chỉnh Sửa Niêm Yết
+            </div>
           </div>
         </div>
       </header>
@@ -251,11 +258,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
                 >
-                  <option value="IN_STOCK">Còn Hàng (Sẵn sàng)</option>
-                  <option value="OUT_OF_STOCK">Hết Hàng</option>
-                  <option value="ON_SALE">Đang Giảm Giá</option>
-                  <option value="BEST_SELLER">Bán Chạy</option>
-                  <option value="INACTIVE">Tạm Ẩn</option>
+                  <option value="IN_STOCK">Còn hàng</option>
+                  <option value="OUT_OF_STOCK">Hết hàng</option>
                 </select>
               </div>
             </div>

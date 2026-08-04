@@ -92,6 +92,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       data: updateData as any
     });
 
+    // Sync the updated stock to the warehouse inventory record
+    if (updateData.stock !== undefined) {
+      await prisma.warehouseInventory.updateMany({
+        where: { productId: existing.id },
+        data: { quantity: updateData.stock }
+      });
+    }
+
     return NextResponse.json({ success: true, product: updated });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: "Lỗi máy chủ khi cập nhật sản phẩm" }, { status: 500 });
