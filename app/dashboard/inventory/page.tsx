@@ -97,7 +97,7 @@ export default function InventoryDashboard() {
       <main className="max-w-6xl mx-auto px-4 pt-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Quản Lý Kho Hàng & Niêm Yết</h1>
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Quản lý kho hàng & niêm yết</h1>
             <p className="text-slate-500 font-medium text-sm mt-1">
               Theo dõi, chỉnh sửa tồn kho và quản lý các thiết bị/sản phẩm bạn đã đăng bán hoặc cho thuê.
             </p>
@@ -105,7 +105,7 @@ export default function InventoryDashboard() {
 
           <Link href="/shop/create">
             <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl px-5 h-11 shadow-sm">
-              <Plus className="h-4 w-4 mr-2" /> Thêm Niêm Yết
+              <Plus className="h-4 w-4 mr-2" /> Thêm niêm yết
             </Button>
           </Link>
         </div>
@@ -120,7 +120,7 @@ export default function InventoryDashboard() {
                 : "text-slate-600 hover:bg-slate-200/60"
             }`}
           >
-            Tất Cả ({products.length})
+            Tất cả ({products.length})
           </button>
 
           <button
@@ -131,7 +131,7 @@ export default function InventoryDashboard() {
                 : "text-slate-600 hover:bg-slate-200/60"
             }`}
           >
-            <Calendar className="h-4 w-4" /> Đã Đăng Cho Thuê ({rentCount})
+            <Calendar className="h-4 w-4" /> Đã đăng cho thuê ({rentCount})
           </button>
 
           <button
@@ -142,7 +142,7 @@ export default function InventoryDashboard() {
                 : "text-slate-600 hover:bg-slate-200/60"
             }`}
           >
-            <Tag className="h-4 w-4" /> Đã Đăng Bán ({saleCount})
+            <Tag className="h-4 w-4" /> Đã đăng bán ({saleCount})
           </button>
         </div>
 
@@ -157,13 +157,13 @@ export default function InventoryDashboard() {
             <div className="bg-slate-100 p-4 rounded-2xl mb-4 text-slate-400">
               <Package className="h-10 w-10" />
             </div>
-            <h3 className="text-lg font-bold text-slate-800 mb-1">Chưa Có Sản Phẩm Nào</h3>
+            <h3 className="text-lg font-bold text-slate-800 mb-1">Chưa có sản phẩm nào</h3>
             <p className="text-slate-500 text-sm max-w-sm mb-6">
               Bạn chưa đăng sản phẩm nào thuộc mục này. Hãy bắt đầu bằng cách thêm niêm yết mới.
             </p>
             <Link href="/shop/create">
               <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl">
-                <Plus className="h-4 w-4 mr-2" /> Đăng Sản Phẩm Mới
+                <Plus className="h-4 w-4 mr-2" /> Đăng sản phẩm mới
               </Button>
             </Link>
           </div>
@@ -185,17 +185,17 @@ export default function InventoryDashboard() {
                         }`}
                       >
                         {item.listingType === "RENT" ? <Calendar className="h-3 w-3" /> : <Tag className="h-3 w-3" />}
-                        {item.listingType === "RENT" ? "CHO THƯÊ" : "BÁN"}
+                        {item.listingType === "RENT" ? "Cho thuê" : "Bán"}
                       </span>
 
                       {item.status === "INACTIVE" && (
                         <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 text-white">
-                          TẠM ẨN
+                          Tạm ẩn
                         </span>
                       )}
                       {item.status === "OUT_OF_STOCK" && (
                         <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600 text-white">
-                          HẾT HÀNG
+                          Hết hàng
                         </span>
                       )}
                     </div>

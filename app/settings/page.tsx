@@ -133,7 +133,7 @@ export default function SettingsPage() {
       <SlideUp>
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-2">
-            Cài Đặt Tài Khoản
+            Cài đặt tài khoản
           </h1>
           <p className="text-slate-500 dark:text-slate-400">
             Quản lý thông tin cá nhân, đơn hàng, thông báo tin nhắn và quyền riêng tư trên EcoEvent Hub.
@@ -363,7 +363,7 @@ export default function SettingsPage() {
                     <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-slate-100">
-                          <Wallet className="h-5 w-5 text-green-600" /> Ví Ký Quỹ & Đặt Cọc Thuê Đồ
+                          <Wallet className="h-5 w-5 text-green-600" /> Ví ký quỹ & đặt cọc thuê đồ
                         </div>
                         <span className="font-bold text-lg text-green-600">1,000,000 ₫</span>
                       </div>
@@ -375,7 +375,7 @@ export default function SettingsPage() {
                     {/* Order & Payment History */}
                     <div>
                       <div className="flex items-center gap-2 mb-3 text-lg font-bold text-slate-900 dark:text-slate-100">
-                        <Receipt className="h-5 w-5 text-green-600" /> Lịch sử Đơn hàng & Thanh toán
+                        <Receipt className="h-5 w-5 text-green-600" /> Lịch sử đơn hàng & thanh toán
                       </div>
                       <div className="space-y-3">
                         <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-card flex justify-between items-center text-sm">
@@ -410,7 +410,7 @@ export default function SettingsPage() {
                   >
                     <div className="p-5 rounded-2xl bg-slate-900 text-white flex justify-between items-center border border-slate-800">
                       <div>
-                        <h4 className="font-bold text-base">Thông báo Tin nhắn mới</h4>
+                        <h4 className="font-bold text-base">Thông báo tin nhắn mới</h4>
                         <p className="text-xs text-slate-400 mt-0.5">Nhận thông báo ngay khi có khách hàng hoặc người cho thuê gửi tin nhắn.</p>
                       </div>
                       <button
@@ -423,7 +423,7 @@ export default function SettingsPage() {
 
                     <div className="p-5 rounded-2xl bg-slate-900 text-white flex justify-between items-center border border-slate-800">
                       <div>
-                        <h4 className="font-bold text-base">Thông báo Đơn hàng & Cho thuê sản phẩm</h4>
+                        <h4 className="font-bold text-base">Thông báo đơn hàng & cho thuê sản phẩm</h4>
                         <p className="text-xs text-slate-400 mt-0.5">Thông báo khi có người thuê/mua đồ của bạn hoặc khi đơn thuê sắp đến hạn trả.</p>
                       </div>
                       <button
@@ -436,7 +436,7 @@ export default function SettingsPage() {
 
                     <div className="p-5 rounded-2xl bg-slate-900 text-white flex justify-between items-center border border-slate-800">
                       <div>
-                        <h4 className="font-bold text-base">Cảnh báo Tiền cọc & Ký quỹ</h4>
+                        <h4 className="font-bold text-base">Cảnh báo tiền cọc & ký quỹ</h4>
                         <p className="text-xs text-slate-400 mt-0.5">Nhận thông báo khi tiền cọc được giữ hoặc được hoàn trả về ví của bạn.</p>
                       </div>
                       <button
@@ -449,7 +449,7 @@ export default function SettingsPage() {
 
                     <div className="p-5 rounded-2xl bg-slate-900 text-white flex justify-between items-center border border-slate-800">
                       <div>
-                        <h4 className="font-bold text-base">Gợi ý Kế hoạch Xanh từ Gemini AI</h4>
+                        <h4 className="font-bold text-base">Gợi ý kế hoạch xanh từ Gemini AI</h4>
                         <p className="text-xs text-slate-400 mt-0.5">Nhận bản tin cập nhật giải pháp giảm rác thải sự kiện từ AI.</p>
                       </div>
                       <button
@@ -552,7 +552,7 @@ export default function SettingsPage() {
                       <div className="flex items-center gap-3">
                         <ShieldCheck className="h-6 w-6 text-green-500 flex-shrink-0" />
                         <div>
-                          <p className="font-bold">Xác thực Sinh viên (.edu.vn)</p>
+                          <p className="font-bold">Xác thực sinh viên (.edu.vn)</p>
                           <p className="text-xs text-green-400/80">Tài khoản của bạn đã được ưu đãi miễn phí 100% tiền đặt cọc thuê thiết bị.</p>
                         </div>
                       </div>

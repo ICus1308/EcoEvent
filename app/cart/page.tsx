@@ -101,13 +101,13 @@ export default function CartPage() {
 
       <main className="max-w-6xl mx-auto px-4 pt-8">
         <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-8">
-          Giỏ Hàng ({items.length})
+          Giỏ hàng ({items.length})
         </h1>
 
         {checkoutSuccess ? (
           <div className="bg-emerald-50 border border-emerald-200 p-12 rounded-3xl text-center max-w-xl mx-auto">
             <CheckCircle2 className="h-16 w-16 text-emerald-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-emerald-950 mb-2">Thanh Toán Đặt Hàng Thành Công!</h2>
+            <h2 className="text-2xl font-bold text-emerald-950 mb-2">Thanh toán đặt hàng thành công!</h2>
             <p className="text-emerald-800 text-sm mb-6">
               Đơn hàng & hợp đồng thuê của bạn đã được ghi nhận. Bạn sẽ được chuyển hướng tới Quản Lý Đơn Hàng...
             </p>
@@ -125,7 +125,7 @@ export default function CartPage() {
             <p className="text-slate-500 text-sm mb-6">Hãy khám phá chợ thiết bị và vật phẩm sự kiện xanh ngay.</p>
             <Link href="/shop">
               <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl px-6">
-                Khám Phá Cửa Hàng
+                Khám phá cửa hàng
               </Button>
             </Link>
           </div>
@@ -202,7 +202,7 @@ export default function CartPage() {
 
             {/* Order Summary sidebar */}
             <div className="bg-white p-6 rounded-2xl border border-slate-200 h-fit space-y-6 shadow-sm">
-              <h3 className="font-bold text-lg text-slate-900 border-b border-slate-100 pb-3">Tóm Tắt Đơn Hàng</h3>
+              <h3 className="font-bold text-lg text-slate-900 border-b border-slate-100 pb-3">Tóm tắt đơn hàng</h3>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between text-slate-600">
@@ -242,7 +242,7 @@ export default function CartPage() {
                 onClick={handleCheckout}
                 className="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base shadow-md hover:shadow-lg transition-all cursor-pointer"
               >
-                Xác Nhận Đặt Hàng & Thuê <ArrowRight className="ml-2 h-4 w-4" />
+                Xác nhận đặt hàng & thuê <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </div>

@@ -51,7 +51,7 @@ export default function AIPlannerPage() {
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold tracking-tight text-green-900 dark:text-green-400 mb-4 flex items-center justify-center gap-2">
             <Sparkles className="h-8 w-8 text-yellow-500 animate-pulse" />
-            AI Lập Kế Hoạch Sự Kiện Xanh
+            AI lập kế hoạch sự kiện xanh
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Hãy cho chúng tôi biết về sự kiện sắp tới của bạn, và Gemini AI sẽ tạo ra một kế hoạch sự kiện bền vững, được cá nhân hóa và so sánh chi phí cho bạn.
@@ -63,7 +63,7 @@ export default function AIPlannerPage() {
         <SlideUp delay={0.1}>
           <Card className="border-green-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader>
-              <CardTitle>Chi tiết Sự kiện</CardTitle>
+              <CardTitle>Chi tiết sự kiện</CardTitle>
               <CardDescription>Điền các thông số để AI tạo kế hoạch.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -137,7 +137,7 @@ export default function AIPlannerPage() {
                   {loading ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Đang tạo Kế hoạch...</>
                   ) : (
-                    <><Sparkles className="mr-2 h-4 w-4" /> Tạo Đề xuất AI</>
+                    <><Sparkles className="mr-2 h-4 w-4" /> Tạo đề xuất AI</>
                   )}
                 </Button>
               </form>
@@ -185,20 +185,20 @@ export default function AIPlannerPage() {
               >
                 <Card className="border-green-200 bg-green-50/50 dark:bg-green-950/20 shadow-xl">
                   <CardHeader>
-                    <CardTitle className="text-xl">So sánh Chi phí</CardTitle>
+                    <CardTitle className="text-xl">So sánh chi phí</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center p-3 rounded-lg bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400">
-                        <span>Sự kiện Truyền thống</span>
+                        <span>Sự kiện truyền thống</span>
                         <span className="font-bold">{result.costComparison?.traditional?.toLocaleString() || 0} ₫</span>
                       </div>
                       <div className="flex justify-between items-center p-3 rounded-lg bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300">
-                        <span>Phương pháp Thân thiện môi trường</span>
+                        <span>Phương pháp thân thiện môi trường</span>
                         <span className="font-bold">{result.costComparison?.ecoFriendly?.toLocaleString() || 0} ₫</span>
                       </div>
                       <div className="border-t pt-3 flex justify-between font-bold text-lg text-green-600">
-                        <span>Tiết kiệm Ước tính</span>
+                        <span>Tiết kiệm ước tính</span>
                         <span>{result.costComparison?.savings?.toLocaleString() || 0} ₫</span>
                       </div>
                     </div>
@@ -207,7 +207,7 @@ export default function AIPlannerPage() {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl">Dòng thời gian Sự kiện</CardTitle>
+                    <CardTitle className="text-xl">Dòng thời gian sự kiện</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <motion.div 

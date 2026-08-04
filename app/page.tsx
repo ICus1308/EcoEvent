@@ -37,12 +37,12 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4 w-full">
                 <Link href="/shop">
                   <Button size="lg" className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white rounded-full px-8 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
-                    Khám phá Thiết bị Eco <ArrowRight className="ml-2 h-4 w-4" />
+                    Khám phá thiết bị eco <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/ai-planner">
                   <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full px-8 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-300">
-                    Dùng thử AI Lập Kế Hoạch
+                    Dùng thử AI lập kế hoạch
                   </Button>
                 </Link>
               </div>
@@ -88,7 +88,7 @@ export default function LandingPage() {
               <div className="h-16 w-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Calendar className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-bold mb-3">AI Lập Kế Hoạch Sự Kiện</h3>
+              <h3 className="text-xl font-bold mb-3">AI lập kế hoạch sự kiện</h3>
               <p className="text-muted-foreground leading-relaxed">
                 Nhập ngân sách và số lượng khách của bạn. Gemini AI của chúng tôi sẽ tạo ra một dòng thời gian hoàn chỉnh, danh sách kiểm tra không rác thải và phân tích chi phí.
               </p>
@@ -98,7 +98,7 @@ export default function LandingPage() {
               <div className="h-16 w-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Recycle className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Chia Sẻ Ngang Hàng (P2P)</h3>
+              <h3 className="text-xl font-bold mb-3">Chia sẻ ngang hàng (P2P)</h3>
               <p className="text-muted-foreground leading-relaxed">
                 Đừng mua mới. Hãy thuê hoặc mượn thiết bị sự kiện (máy ảnh, đồ trang trí, đồ dùng ăn uống) trực tiếp từ các câu lạc bộ hoặc nhà cung cấp địa phương.
               </p>
@@ -108,7 +108,7 @@ export default function LandingPage() {
               <div className="h-16 w-16 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <ShieldCheck className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Hệ Thống Xác Thực Đáng Tin Cậy</h3>
+              <h3 className="text-xl font-bold mb-3">Hệ thống xác thực đáng tin cậy</h3>
               <p className="text-muted-foreground leading-relaxed">
                 Thanh toán VietQR an toàn, đặt cọc ký quỹ kỹ thuật số và yêu cầu xác minh sinh viên/nhà cung cấp giúp cộng đồng luôn an toàn.
               </p>
@@ -127,7 +127,7 @@ export default function LandingPage() {
             </p>
             <Link href="/shop">
               <Button size="lg" className="bg-white text-green-900 hover:bg-green-50 rounded-full px-8 font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                Khám phá Chợ Sinh Thái
+                Khám phá chợ sinh thái
               </Button>
             </Link>
           </div>

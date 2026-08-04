@@ -79,7 +79,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
               <div className="absolute top-4 left-4 flex gap-2">
                 <span className={`px-3 py-1 rounded-xl text-xs font-bold text-white shadow-sm ${isRent ? "bg-emerald-600" : "bg-blue-600"}`}>
-                  {isRent ? "VẬT PHẨM THUÊ" : "VẬT PHẨM BÁN"}
+                  {isRent ? "Cho thuê" : "Bán"}
                 </span>
                 <span className="px-3 py-1 rounded-xl text-xs font-bold bg-black/60 backdrop-blur-md text-white">
                   SKU: {product.sku}
@@ -96,20 +96,29 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
 
               <div className="flex flex-wrap gap-4 text-xs font-medium text-slate-600 border-y border-slate-100 py-3">
-                <span>Danh mục: <strong className="text-slate-900">{product.category}</strong></span>
+                <span>Danh mục: <strong className="text-slate-900">
+                  {product.category === "DECORATION" ? "Trang trí sự kiện"
+                    : product.category === "EQUIPMENT" ? "Thiết bị & âm thanh"
+                    : product.category === "TABLEWARE" ? "Bộ đồ ăn & cốc"
+                    : product.category === "ATTIRE" ? "Trang phục & phụ kiện"
+                    : product.category === "PROJECT_TOOLS" ? "Dụng cụ dự án"
+                    : product.category}
+                </strong></span>
                 <span>Tồn kho: <strong className="text-emerald-700">{product.stock} sản phẩm</strong></span>
-                <span>Trạng thái: <strong className="text-slate-900">{product.status}</strong></span>
+                <span>Trạng thái: <strong className="text-slate-900">
+                  {product.status === "IN_STOCK" ? "Còn hàng" : product.status === "OUT_OF_STOCK" ? "Hết hàng" : product.status}
+                </strong></span>
               </div>
 
               <div>
-                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-2">Mô Tả Chi Tiết</h3>
+                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-2">Mô tả chi tiết</h3>
                 <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">{product.description}</p>
               </div>
 
               {isRent && (
                 <div className="p-4 bg-emerald-50/60 border border-emerald-200 rounded-2xl text-xs text-emerald-950 space-y-2">
                   <h4 className="font-bold text-sm flex items-center gap-1.5 text-emerald-800">
-                    <ShieldCheck className="h-4 w-4 text-emerald-600" /> Quyền Lợi & Chính Sách Thuê Xanh
+                    <ShieldCheck className="h-4 w-4 text-emerald-600" /> Quyền lợi & chính sách thuê xanh
                   </h4>
                   <p>• Tiền cọc được bảo lưu an toàn và hoàn trả 100% khi nhận lại thiết bị đúng hạn.</p>
                   <p>• Hỗ trợ đổi trả trong 24h nếu thiết bị không đúng mô tả.</p>

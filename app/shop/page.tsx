@@ -42,8 +42,8 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const LISTING_TYPE_LABELS: Record<string, string> = {
   "ALL_TYPES": "Tất cả loại hình",
-  "RENT": "Chỉ Thuê",
-  "SALE": "Chỉ Bán"
+  "RENT": "Chỉ thuê",
+  "SALE": "Chỉ bán"
 };
 
 export default function ShopPage() {
@@ -99,7 +99,7 @@ export default function ShopPage() {
     <div className="container mx-auto p-4 md:p-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-green-900 dark:text-green-400">Chợ Sinh Thái Eco-Gear</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-green-900 dark:text-green-400">Chợ sinh thái Eco-Gear</h1>
           <p className="text-muted-foreground mt-1">Thuê, mua hoặc mượn thiết bị bền vững cho sự kiện tiếp theo của bạn.</p>
         </div>
       </div>
@@ -179,10 +179,10 @@ export default function ShopPage() {
                           product.listingType === 'SALE' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-orange-500 hover:bg-orange-600'
                         }`}
                       >
-                        {product.listingType === 'SALE' ? 'BÁN' : 'THUÊ'}
+                        {product.listingType === 'SALE' ? 'Bán' : 'Cho thuê'}
                       </Badge>
                       {product.stock <= 0 && (
-                        <Badge className="absolute bottom-2 left-2 bg-slate-900/80 text-white">HẾT HÀNG</Badge>
+                        <Badge className="absolute bottom-2 left-2 bg-slate-900/80 text-white">Hết hàng</Badge>
                       )}
                     </div>
 

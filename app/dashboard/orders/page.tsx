@@ -94,7 +94,7 @@ export default function OrdersDashboard() {
 
       <main className="max-w-6xl mx-auto px-4 pt-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Nhật Ký Mua Hàng & Thuê Thiết Bị</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Nhật ký mua hàng & thuê thiết bị</h1>
           <p className="text-slate-500 font-medium text-sm mt-1">
             Quản lý thời hạn trả đồ thuê, tình trạng tiền cọc và lịch sử các món đồ đã mua từ cơ sở dữ liệu thực tế.
           </p>
@@ -110,7 +110,7 @@ export default function OrdersDashboard() {
                 : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
             }`}
           >
-            <Clock className="h-4 w-4" /> Đang Thuê ({activeRentals.length})
+            <Clock className="h-4 w-4" /> Đang thuê ({activeRentals.length})
           </button>
 
           <button
@@ -121,7 +121,7 @@ export default function OrdersDashboard() {
                 : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
             }`}
           >
-            <ShoppingBag className="h-4 w-4" /> Đã Mua ({purchasedOrders.length})
+            <ShoppingBag className="h-4 w-4" /> Đã mua ({purchasedOrders.length})
           </button>
 
           <button
@@ -132,7 +132,7 @@ export default function OrdersDashboard() {
                 : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
             }`}
           >
-            <CheckCircle2 className="h-4 w-4" /> Lịch Sử Thuê Đã Trả ({pastRentals.length})
+            <CheckCircle2 className="h-4 w-4" /> Lịch sử thuê đã trả ({pastRentals.length})
           </button>
         </div>
 
@@ -155,7 +155,7 @@ export default function OrdersDashboard() {
                     </p>
                     <Link href="/shop" className="inline-block mt-4">
                       <Button className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl">
-                        Khám Phá Cửa Hàng
+                        Khám phá cửa hàng
                       </Button>
                     </Link>
                   </div>
@@ -174,7 +174,7 @@ export default function OrdersDashboard() {
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-emerald-600 text-white uppercase">
-                              Đang Thuê Active
+                              Đang thuê Active
                             </span>
                             <span className="text-xs font-mono text-slate-400">Mã đơn: {rental.id}</span>
                           </div>
@@ -205,7 +205,7 @@ export default function OrdersDashboard() {
                           onClick={() => handleReturnItem(rental.id)}
                           className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs h-10 px-5"
                         >
-                          <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Báo Trả Đồ & Hoàn Cọc
+                          <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Báo trả đồ & hoàn cọc
                         </Button>
                       </div>
                     </div>
@@ -230,7 +230,7 @@ export default function OrdersDashboard() {
                         <img src={order.imageUrl || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600"} alt={order.productName} className="w-20 h-20 rounded-xl object-cover border border-slate-100" />
                         <div>
                           <span className="px-2.5 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-800 mb-1 inline-block">
-                            Đã Mua Thành Công
+                            Đã mua thành công
                           </span>
                           <h3 className="font-bold text-slate-900 text-base">{order.productName}</h3>
                           <p className="text-xs text-slate-500 mt-1">Mã đơn: {order.id} | Ngày mua: {order.createdAt}</p>
@@ -261,7 +261,7 @@ export default function OrdersDashboard() {
                         <img src={past.imageUrl || "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=600"} alt={past.productName} className="w-20 h-20 rounded-xl object-cover border border-slate-100" />
                         <div>
                           <span className="px-2.5 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-700 mb-1 inline-block">
-                            Đã Trả Đồ & Hoàn Cọc
+                            Đã trả đồ & hoàn cọc
                           </span>
                           <h3 className="font-bold text-slate-900 text-base">{past.productName}</h3>
                           <p className="text-xs text-slate-500 mt-1">
@@ -271,7 +271,7 @@ export default function OrdersDashboard() {
                       </div>
                       <div className="text-right">
                         <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg">
-                          Đã Hoàn Tất
+                          Đã hoàn tất
                         </span>
                       </div>
                     </div>

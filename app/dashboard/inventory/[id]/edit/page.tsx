@@ -182,11 +182,11 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           
           {/* General Information */}
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-2">1. Thông Tin Cơ Bản</h3>
+            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-2">1. Thông tin cơ bản</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Tên Sản Phẩm *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Tên sản phẩm *</label>
                 <input
                   type="text"
                   required
@@ -197,7 +197,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Mã SKU / Mã Sản Phẩm *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Mã SKU / Mã sản phẩm *</label>
                 <input
                   type="text"
                   required
@@ -209,7 +209,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Mô Tả Sản Phẩm</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Mô tả sản phẩm</label>
               <textarea
                 rows={3}
                 value={formData.description}
@@ -221,38 +221,38 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
           {/* Classification & Status */}
           <div className="space-y-4 pt-2">
-            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-2">2. Phân Loại & Trạng Thái</h3>
+            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-2">2. Phân loại & trạng thái</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Danh Mục</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Danh mục</label>
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
                 >
-                  <option value="DECORATION">Trang trí Event</option>
-                  <option value="EQUIPMENT">Thiết bị & Âm thanh</option>
-                  <option value="TABLEWARE">Bộ đồ ăn & Cốc</option>
-                  <option value="ATTIRE">Trang phục & Phụ kiện</option>
+                  <option value="DECORATION">Trang trí sự kiện</option>
+                  <option value="EQUIPMENT">Thiết bị & âm thanh</option>
+                  <option value="TABLEWARE">Bộ đồ ăn & cốc</option>
+                  <option value="ATTIRE">Trang phục & phụ kiện</option>
                   <option value="PROJECT_TOOLS">Dụng cụ dự án</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Hình Thức Đăng</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Hình thức đăng</label>
                 <select
                   value={formData.listingType}
                   onChange={(e) => setFormData({ ...formData, listingType: e.target.value as "SALE" | "RENT" })}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-600"
                 >
-                  <option value="SALE">Đăng Bán (Bán luôn)</option>
-                  <option value="RENT">Cho Thuê (Tính theo ngày)</option>
+                  <option value="SALE">Bán</option>
+                  <option value="RENT">Cho thuê</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Trạng Thái Niêm Yết</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Trạng thái</label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -267,12 +267,12 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
           {/* Pricing Mechanics */}
           <div className="space-y-4 pt-2">
-            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-2">3. Giá & Tồn Kho</h3>
+            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-2">3. Giá & tồn kho</h3>
 
             {formData.listingType === "SALE" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
                 <div>
-                  <label className="block text-xs font-semibold text-blue-900 mb-1">Giá Bán Trực Tiếp (VNĐ) *</label>
+                  <label className="block text-xs font-semibold text-blue-900 mb-1">Giá bán (VNĐ) *</label>
                   <input
                     type="number"
                     min="0"
@@ -282,7 +282,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Số Lượng Trong Kho *</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Số lượng tồn kho *</label>
                   <input
                     type="number"
                     min="0"
@@ -295,7 +295,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100">
                 <div>
-                  <label className="block text-xs font-semibold text-emerald-900 mb-1">Giá Thuê Theo Ngày (VNĐ) *</label>
+                  <label className="block text-xs font-semibold text-emerald-900 mb-1">Giá thuê theo ngày (VNĐ) *</label>
                   <input
                     type="number"
                     min="0"
@@ -305,7 +305,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-emerald-900 mb-1">Tiền Cọc Yêu Cầu (VNĐ) *</label>
+                  <label className="block text-xs font-semibold text-emerald-900 mb-1">Tiền cọc (VNĐ) *</label>
                   <input
                     type="number"
                     min="0"
@@ -315,7 +315,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Số Lượng Sẵn Cho Thuê *</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Số lượng tồn kho *</label>
                   <input
                     type="number"
                     min="0"
@@ -330,11 +330,11 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
           {/* Media & Eco Badge */}
           <div className="space-y-4 pt-2">
-            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-2">4. Hình Ảnh & Nhãn Xanh</h3>
+            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-2">4. Hình ảnh & đặc tính sinh thái</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Đường Dẫn Ảnh (URL) *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Đường dẫn ảnh (URL) *</label>
                 <input
                   type="text"
                   required
@@ -345,7 +345,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Nhãn Đặc Tính Sinh Thái</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Đặc tính sinh thái</label>
                 <input
                   type="text"
                   value={formData.ecoFeatures}
@@ -360,7 +360,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           {/* Form Actions */}
           <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
             <Link href="/dashboard/inventory">
-              <Button type="button" variant="ghost" className="rounded-xl">Hủy Quá Trình</Button>
+              <Button type="button" variant="ghost" className="rounded-xl">Hủy quá trình</Button>
             </Link>
             <Button
               type="submit"
@@ -368,7 +368,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl px-6 h-11"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
-              Lưu Thay Đổi Niêm Yết
+              Lưu thay đổi niêm yết
             </Button>
           </div>
 

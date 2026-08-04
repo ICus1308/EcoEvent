@@ -217,10 +217,10 @@ export default function TechSupportBubble({
       <button
         onClick={onToggle}
         className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-700 hover:to-indigo-700 text-white p-3.5 rounded-full shadow-lg shadow-emerald-900/20 hover:scale-105 transition-all duration-200"
-        title="Hỗ Trợ Kỹ Thuật & AI Chatbot"
+        title="Hỗ trợ kỹ thuật & AI Chatbot"
       >
         <Headset className="h-6 w-6" />
-        <span className="hidden md:inline font-bold text-xs pr-1">Hỗ Trợ AI</span>
+        <span className="hidden md:inline font-bold text-xs pr-1">Hỗ trợ AI</span>
       </button>
 
       {/* Expandable Chat Window */}

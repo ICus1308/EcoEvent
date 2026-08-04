@@ -234,7 +234,7 @@ export default function UserChatBubble({
         title="Nhắn tin P2P giữa Người thuê & Chủ thiết bị"
       >
         <MessageSquare className="h-6 w-6 text-emerald-400" />
-        <span className="hidden md:inline font-bold text-xs pr-1">Tin Nhắn</span>
+        <span className="hidden md:inline font-bold text-xs pr-1">Tin nhắn</span>
         {totalUnread > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-extrabold h-5 w-5 rounded-full flex items-center justify-center border-2 border-white animate-bounce">
             {totalUnread}
@@ -272,7 +272,7 @@ export default function UserChatBubble({
               <div className="flex items-center gap-2.5">
                 <MessageSquare className="h-5 w-5 text-emerald-400" />
                 <div>
-                  <h3 className="font-bold text-sm leading-tight">Tin Nhắn P2P</h3>
+                  <h3 className="font-bold text-sm leading-tight">Tin nhắn</h3>
                   <p className="text-[10px] text-slate-400">Trao đổi vật phẩm & lịch thuê</p>
                 </div>
               </div>

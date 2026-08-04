@@ -72,14 +72,14 @@ export default function PricingPage() {
         
         <div className="max-w-4xl mx-auto relative z-10">
           <Link href="/" className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-400 hover:text-emerald-300 mb-6 bg-emerald-950/60 px-3.5 py-1.5 rounded-full border border-emerald-800/50 backdrop-blur-md">
-            <ArrowLeft className="w-3.5 h-3.5" /> Quay lại Trang Chủ
+            <ArrowLeft className="w-3.5 h-3.5" /> Quay lại trang chủ
           </Link>
 
           <span className="block text-emerald-400 font-numeric font-bold text-xs uppercase tracking-widest mb-3">
-            Bảng Giá Gói Thành Viên
+            Bảng giá gói thành viên
           </span>
           <h1 className="text-4xl sm:text-5xl font-extrabold font-heading tracking-tight text-white mb-4">
-            Nâng Tầm Trải Nghiệm Sự Kiện Xanh
+            Nâng tầm trải nghiệm sự kiện xanh
           </h1>
           <p className="text-slate-300 text-base max-w-2xl mx-auto font-body">
             Mở khóa sức mạnh AI thiết kế sự kiện không giới hạn, giảm phí dịch vụ giao dịch và đăng bán vật phẩm trên Chợ Eco-Gear.
@@ -95,7 +95,7 @@ export default function PricingPage() {
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              Thanh Toán Theo Tháng
+              Thanh toán theo tháng
             </button>
             <button
               onClick={() => setIsAnnual(true)}
@@ -105,7 +105,7 @@ export default function PricingPage() {
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              Thanh Toán Theo Năm
+              Thanh toán theo năm
               <span className="bg-emerald-400/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-numeric border border-emerald-400/30">
                 Tiết kiệm 20%
               </span>
@@ -128,7 +128,7 @@ export default function PricingPage() {
             <div className={`bg-white rounded-3xl border ${currentTier === "FREE" ? "border-emerald-500 shadow-emerald-100/50" : "border-slate-200"} p-8 shadow-sm flex flex-col justify-between relative`}>
               {currentTier === "FREE" && (
                 <div className="absolute -top-3.5 right-6 bg-slate-900 text-white text-[10px] font-bold font-numeric uppercase px-3 py-1 rounded-full border border-slate-700">
-                  Gói Hiện Tại
+                  Gói hiện tại
                 </div>
               )}
               <div>
@@ -136,7 +136,7 @@ export default function PricingPage() {
                   <div className="p-2 bg-slate-100 rounded-xl text-slate-700">
                     <Zap className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-bold font-heading text-slate-900">Gói Cơ Bản</h3>
+                  <h3 className="text-xl font-bold font-heading text-slate-900">Gói cơ bản</h3>
                 </div>
                 <p className="text-xs text-slate-500 mb-6 h-10">Dành cho cá nhân trải nghiệm ứng dụng và tổ chức sự kiện quy mô nhỏ.</p>
                 
@@ -181,14 +181,14 @@ export default function PricingPage() {
                 onClick={() => handleSelectPlan("FREE")}
                 className="w-full h-12 rounded-2xl border-slate-300 font-bold text-xs"
               >
-                {currentTier === "FREE" ? "Gói Đang Sử Dụng" : "Dùng Miễn Phí"}
+                {currentTier === "FREE" ? "Gói đang sử dụng" : "Dùng miễn phí"}
               </Button>
             </div>
 
             {/* GÓI PLUS (PRO - POPULAR) */}
             <div className={`bg-gradient-to-b from-emerald-950 via-slate-900 to-slate-900 text-white rounded-3xl border-2 border-emerald-500 p-8 shadow-xl flex flex-col justify-between relative transform md:-translate-y-2`}>
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold font-numeric text-[11px] uppercase tracking-wider px-4 py-1 rounded-full shadow-lg flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" /> Phổ Biến Nhất
+                <Sparkles className="w-3.5 h-3.5" /> Phổ biến nhất
               </div>
               
               <div>
@@ -249,7 +249,7 @@ export default function PricingPage() {
                 onClick={() => handleSelectPlan("PLUS")}
                 className="w-full h-12 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg transition-all"
               >
-                {currentTier === "PLUS" ? "Gói Hiện Tại" : "Nâng Cấp Gói Plus"}
+                {currentTier === "PLUS" ? "Gói hiện tại" : "Nâng cấp gói Plus"}
               </Button>
             </div>
 
@@ -257,7 +257,7 @@ export default function PricingPage() {
             <div className={`bg-white rounded-3xl border ${currentTier === "PREMIUM" ? "border-amber-500 shadow-amber-100/50" : "border-slate-200"} p-8 shadow-sm flex flex-col justify-between relative`}>
               {currentTier === "PREMIUM" && (
                 <div className="absolute -top-3.5 right-6 bg-amber-500 text-slate-950 text-[10px] font-bold font-numeric uppercase px-3 py-1 rounded-full">
-                  Gói Hiện Tại
+                  Gói hiện tại
                 </div>
               )}
               <div>
@@ -311,7 +311,7 @@ export default function PricingPage() {
                 onClick={() => handleSelectPlan("PREMIUM")}
                 className="w-full h-12 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-md transition-all"
               >
-                {currentTier === "PREMIUM" ? "Gói Hiện Tại" : "Đăng Ký Premium Vendor"}
+                {currentTier === "PREMIUM" ? "Gói hiện tại" : "Đăng ký Premium Vendor"}
               </Button>
             </div>
 
@@ -321,7 +321,7 @@ export default function PricingPage() {
         {/* Feature Comparison Table */}
         <div className="mt-20 bg-white rounded-3xl border border-slate-200 p-8 shadow-sm overflow-hidden">
           <h2 className="text-2xl font-bold font-heading text-slate-900 mb-6 text-center">
-            So Sánh Chi Tiết Các Quyền Lợi
+            So sánh chi tiết các quyền lợi
           </h2>
 
           <div className="overflow-x-auto">

@@ -49,13 +49,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Tin nhắn không được để trống" }, { status: 400 });
     }
 
-    // Build context prompt
-    const conversationHistoryStr = history
-      .slice(-6)
-      .map((h: { sender: string; text: string }) => `${h.sender === "user" ? "User" : "AI Support"}: ${h.text}`)
-      .join("\n");
+    // Format conversation history for multi-turn Gemini API call
+    const contents: any[] = [];
 
-    const fullPrompt = `${SYSTEM_PROMPT}\n\nLịch sử trò chuyện gần đây:\n${conversationHistoryStr}\n\nUser: ${message || "Vui lòng kiểm tra file đính kèm này giúp tôi."}\n\nAI Support:`;
+    if (Array.isArray(history)) {
+      history.slice(-10).forEach((h: { sender: string; text: string }) => {
+        if (h.sender === "user" || h.sender === "ai") {
+          contents.push({
+            role: h.sender === "user" ? "user" : "model",
+            parts: [{ text: h.text }]
+          });
+        }
+      });
+    }
+
+    contents.push({
+      role: "user",
+      parts: [{ text: message || "Vui lòng kiểm tra file đính kèm này giúp tôi." }]
+    });
 
     let replyText = "";
 
@@ -63,8 +74,9 @@ export async function POST(req: Request) {
       if (process.env.GEMINI_API_KEY) {
         const response = await ai.models.generateContent({
           model: "gemini-1.5-flash",
-          contents: fullPrompt,
+          contents: contents,
           config: {
+            systemInstruction: SYSTEM_PROMPT,
             temperature: 0.5
           }
         });

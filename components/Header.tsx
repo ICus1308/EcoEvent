@@ -35,10 +35,10 @@ export default function Header() {
         
         {/* Core Navigation */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700 dark:text-slate-200">
-          <Link href="/shop" className="transition-colors hover:text-emerald-600">Chợ Sinh Thái</Link>
-          <Link href="/ai-planner" className="transition-colors hover:text-emerald-600">AI Lập Kế Hoạch</Link>
+          <Link href="/shop" className="transition-colors hover:text-emerald-600">Chợ sinh thái</Link>
+          <Link href="/ai-planner" className="transition-colors hover:text-emerald-600">AI lập kế hoạch</Link>
           <Link href="/pricing" className="transition-colors text-emerald-700 font-bold hover:text-emerald-600 flex items-center gap-1">
-            Gói Dịch Vụ
+            Gói dịch vụ
           </Link>
         </nav>
         
@@ -50,12 +50,12 @@ export default function Header() {
             <>
               <Link href="/login">
                 <Button variant="ghost" className="hidden sm:inline-flex">
-                  Đăng Nhập
+                  Đăng nhập
                 </Button>
               </Link>
               <Link href="/register">
                 <Button className="bg-emerald-600 hover:bg-emerald-700 font-bold">
-                  Bắt Đầu Ngay
+                  Bắt đầu ngay
                 </Button>
               </Link>
             </>

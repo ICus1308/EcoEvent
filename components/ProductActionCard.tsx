@@ -7,6 +7,7 @@ import { ShoppingCart, Zap, Calendar as CalendarIcon, ShieldCheck, Check, Minus,
 import { useAuth } from "@/components/AuthProvider";
 
 import { Building2 } from "lucide-react";
+import QuantityInput from "@/components/ui/QuantityInput";
 
 interface ProductActionCardProps {
   product: {
@@ -219,7 +220,7 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
       {/* Header Price Section */}
       <div>
         <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
-          {isRent ? "Gói Cho Thuê & Tiền Cọc" : "Giá Bán Trực Tiếp"}
+          {isRent ? "Gói cho thuê & tiền cọc" : "Giá bán"}
         </span>
 
         {isRent ? (
@@ -251,7 +252,7 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
         <div className="space-y-2">
           <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
             <Building2 className="h-4 w-4 text-emerald-600" />
-            Chọn Kho Xuất Hàng (Warehouse)
+            Chọn kho xuất hàng
           </label>
           <select
             value={selectedWarehouseId}
@@ -276,7 +277,7 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
         <div className="space-y-3 bg-emerald-50/50 dark:bg-emerald-950/20 p-4 rounded-2xl border border-emerald-100 dark:border-emerald-900/50">
           <label className="text-xs font-bold text-emerald-900 dark:text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
             <CalendarIcon className="h-4 w-4 text-emerald-600" />
-            Chọn Ngày Thuê & Trả
+            Chọn ngày thuê & trả
           </label>
 
           <div className="grid grid-cols-2 gap-3 text-xs">
@@ -321,24 +322,14 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
 
       {/* Quantity Controls */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Số Lượng</span>
-        <div className="flex items-center gap-3 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl">
-          <button
-            disabled={isOwner || isOutOfStock}
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="w-8 h-8 rounded-lg bg-white dark:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-200 transition-colors disabled:opacity-50"
-          >
-            <Minus className="h-3.5 w-3.5" />
-          </button>
-          <span className="w-8 text-center font-extrabold text-sm text-slate-900 dark:text-slate-100">{quantity}</span>
-          <button
-            disabled={isOwner || isOutOfStock}
-            onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-            className="w-8 h-8 rounded-lg bg-white dark:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-200 transition-colors disabled:opacity-50"
-          >
-            <Plus className="h-3.5 w-3.5" />
-          </button>
-        </div>
+        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Số lượng</span>
+        <QuantityInput
+          value={quantity}
+          onChange={setQuantity}
+          min={1}
+          max={availableStock}
+          disabled={isOwner || isOutOfStock}
+        />
       </div>
 
       {cartSuccess && (
@@ -369,7 +360,7 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
           ) : (
             <ShoppingCart className="h-4 w-4 mr-2" />
           )}
-          {isOwner ? "Sản phẩm của bạn" : isOutOfStock ? "Hết Hàng Trong Kho" : "Thêm Vào Giỏ Hàng"}
+          {isOwner ? "Sản phẩm của bạn" : isOutOfStock ? "Hết hàng trong kho" : "Thêm vào giỏ hàng"}
         </Button>
 
         {/* Action 2: Direct Checkout */}
@@ -386,10 +377,10 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
           {isOwner
             ? "Không thể tự mua"
             : isOutOfStock
-            ? "Đã Hết Hàng"
+            ? "Đã hết hàng"
             : isRent
-            ? "Thuê Ngay Trực Tiếp"
-            : "Thanh Toán Mua Ngay"}
+            ? "Thuê ngay"
+            : "Mua ngay"}
         </Button>
 
         {/* Action 3: Contact Owner */}
@@ -404,7 +395,7 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
           ) : (
             <MessageSquare className="h-4 w-4 mr-2" />
           )}
-          Liên Hệ Chủ Đồ
+          Liên hệ chủ đồ
         </Button>
       </div>
     </div>
