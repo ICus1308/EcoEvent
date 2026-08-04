@@ -86,6 +86,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Vui lòng đăng nhập để đăng sản phẩm" }, { status: 401 });
     }
 
+    // FEATURE GATE: Check subscription limits for product listings
+    const { canCreateProduct } = await import("@/lib/subscription");
+    const check = await canCreateProduct(currentUserId);
+
+    if (!check.allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          limitReached: true,
+          error: `Bạn đã đạt giới hạn tối đa ${check.limit} sản phẩm của ${check.planName}. Vui lòng nâng cấp gói cước để tiếp tục đăng thêm!`,
+        },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json().catch(() => ({}));
     const validation = productSchema.safeParse(body);
 

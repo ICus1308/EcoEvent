@@ -12,6 +12,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file received." }, { status: 400 });
     }
 
+    const isVideo = file.type.startsWith("video/");
+    const isImage = file.type.startsWith("image/");
+    const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
+    const MAX_IMAGE_SIZE = 5 * 1024 * 1024;  // 5MB
+
+    if (isVideo && file.size > MAX_VIDEO_SIZE) {
+      return NextResponse.json({ error: "Kích thước video vượt quá 50MB giới hạn." }, { status: 400 });
+    }
+    
+    if (isImage && file.size > MAX_IMAGE_SIZE) {
+      return NextResponse.json({ error: "Kích thước ảnh vượt quá 5MB giới hạn." }, { status: 400 });
+    }
+
     const buffer = Buffer.from(await file.arrayBuffer());
     
     // Generate a unique filename

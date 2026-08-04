@@ -2,12 +2,27 @@ import { prisma } from "@/lib/prisma";
 
 export async function getAuthenticatedUserId(req: Request): Promise<string | null> {
   try {
+    let token: string | null = null;
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return null;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.substring(7);
+    } else {
+      const cookieHeader = req.headers.get("cookie");
+      if (cookieHeader) {
+        const cookiePairs = cookieHeader.split(";");
+        for (const pair of cookiePairs) {
+          const [key, ...valParts] = pair.trim().split("=");
+          if (["sessionToken", "token", "next-auth.session-token", "supabase-token"].includes(key)) {
+            token = decodeURIComponent(valParts.join("="));
+            break;
+          }
+        }
+      }
     }
 
-    const token = authHeader.substring(7);
+    if (!token) {
+      return null;
+    }
 
     // 1. Check for demo-token (base64url JSON)
     if (token.startsWith("demo-token-")) {

@@ -94,13 +94,30 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         payload.depositAmount = Number(formData.depositAmount);
       }
 
+      const token = typeof window !== "undefined" ? localStorage.getItem("sessionToken") : null;
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const res = await fetch(`/api/products/${productId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(payload)
       });
 
       const data = await res.json();
+      if (res.status === 401) {
+        setErrorMsg("Vui lòng đăng nhập để chỉnh sửa");
+        setTimeout(() => {
+          router.push(`/login?callbackUrl=/dashboard/inventory/${productId}/edit`);
+        }, 1500);
+        return;
+      } else if (res.status === 403) {
+        setErrorMsg(data.error || "Bạn không có quyền chỉnh sửa sản phẩm này");
+        return;
+      }
+
       if (res.ok && data.success) {
         router.push("/dashboard/inventory");
       } else {

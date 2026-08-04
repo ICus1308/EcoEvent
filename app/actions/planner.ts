@@ -9,8 +9,22 @@ export async function generateEventPlan(params: {
   guestCount: number;
   budget: number;
   ecoLevel: string;
+  userId?: string;
 }) {
   try {
+    // Check subscription limit if userId is provided
+    if (params.userId) {
+      const { canUseAiPlanner, incrementAiUsage } = await import("@/lib/subscription");
+      const check = await canUseAiPlanner(params.userId);
+
+      if (!check.allowed) {
+        throw new Error(
+          `Bạn đã dùng hết ${check.limit} lần tạo kế hoạch AI của ${check.planName} trong tháng này. Hãy nâng cấp lên gói Plus hoặc Premium để tạo không giới hạn!`
+        );
+      }
+
+      await incrementAiUsage(params.userId);
+    }
     const prompt = `
       Bạn là một chuyên gia tổ chức sự kiện bền vững (eco-friendly event planner).
       Hãy tạo một kế hoạch sự kiện thực tế, thân thiện với môi trường cho loại sự kiện: "${params.eventType}", với ${params.guestCount} khách mời, mục tiêu ngân sách là ${params.budget} VND, và mức độ thân thiện môi trường là "${params.ecoLevel}".

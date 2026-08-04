@@ -37,6 +37,9 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700 dark:text-slate-200">
           <Link href="/shop" className="transition-colors hover:text-emerald-600">Chợ Sinh Thái</Link>
           <Link href="/ai-planner" className="transition-colors hover:text-emerald-600">AI Lập Kế Hoạch</Link>
+          <Link href="/pricing" className="transition-colors text-emerald-700 font-bold hover:text-emerald-600 flex items-center gap-1">
+            Gói Dịch Vụ
+          </Link>
         </nav>
         
         {/* Quick Auth Actions & User Profile Menu */}

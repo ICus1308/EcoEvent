@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Zap, Calendar as CalendarIcon, ShieldCheck, Check, Minus, Plus, Loader2, AlertTriangle, ShieldAlert } from "lucide-react";
+import { ShoppingCart, Zap, Calendar as CalendarIcon, ShieldCheck, Check, Minus, Plus, Loader2, AlertTriangle, ShieldAlert, MessageSquare } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 
 import { Building2 } from "lucide-react";
@@ -38,6 +38,7 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
   const [directCheckingOut, setDirectCheckingOut] = useState(false);
   const [cartSuccess, setCartSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [contactingOwner, setContactingOwner] = useState(false);
 
   const defaultWarehouseId = product.inventories && product.inventories.length > 0 ? product.inventories[0].warehouseId : "";
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>(defaultWarehouseId);
@@ -158,6 +159,42 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
     } catch (err) {
       setErrorMsg("Không thể kết nối máy chủ");
       setDirectCheckingOut(false);
+    }
+  };
+
+  // Handle Contact Owner
+  const handleContactOwner = async () => {
+    if (!user) {
+      setErrorMsg("Vui lòng đăng nhập để liên hệ chủ đồ");
+      return;
+    }
+    if (isOwner) {
+      setErrorMsg("Đây là sản phẩm của bạn.");
+      return;
+    }
+
+    setContactingOwner(true);
+    setErrorMsg("");
+    try {
+      const token = localStorage.getItem("sessionToken");
+      const res = await fetch("/api/chat/conversations", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ recipientId: product.ownerId })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert("Đã mở cuộc trò chuyện với chủ đồ! Hãy mở Bong bóng Chat góc dưới bên phải.");
+      } else {
+        setErrorMsg(data.error || "Không thể khởi tạo trò chuyện");
+      }
+    } catch (err) {
+      setErrorMsg("Không thể kết nối máy chủ");
+    } finally {
+      setContactingOwner(false);
     }
   };
 
@@ -353,6 +390,21 @@ export default function ProductActionCard({ product }: ProductActionCardProps) {
             : isRent
             ? "Thuê Ngay Trực Tiếp"
             : "Thanh Toán Mua Ngay"}
+        </Button>
+
+        {/* Action 3: Contact Owner */}
+        <Button
+          onClick={handleContactOwner}
+          disabled={contactingOwner || isOwner}
+          variant="outline"
+          className="w-full h-12 rounded-2xl border-slate-300 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-sm shadow-sm disabled:opacity-50"
+        >
+          {contactingOwner ? (
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          ) : (
+            <MessageSquare className="h-4 w-4 mr-2" />
+          )}
+          Liên Hệ Chủ Đồ
         </Button>
       </div>
     </div>

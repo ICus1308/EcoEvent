@@ -1,24 +1,37 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { AuthProvider } from "@/components/AuthProvider";
 import MainLayoutWrapper from "@/components/MainLayoutWrapper";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const headingFont = Plus_Jakarta_Sans({
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-heading",
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const bodyFont = Inter({
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const numericFont = Space_Grotesk({
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-numeric",
+  weight: ["500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "EcoEvent Hub",
   description: "Nền tảng sự kiện bền vững đầu tiên tại Việt Nam",
 };
+
+import FloatingChatStack from "@/components/chat/FloatingChatStack";
 
 export default function RootLayout({
   children,
@@ -28,12 +41,13 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${headingFont.variable} ${bodyFont.variable} ${numericFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
           <Header />
           <MainLayoutWrapper>{children}</MainLayoutWrapper>
+          <FloatingChatStack />
         </AuthProvider>
       </body>
     </html>

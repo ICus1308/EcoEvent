@@ -9,8 +9,10 @@ import { Sparkles, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { generateEventPlan } from "@/app/actions/planner";
 import { SlideUp, staggerContainerVariants, staggerItemVariants } from "@/components/ui/animations";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function AIPlannerPage() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   
@@ -31,12 +33,13 @@ export default function AIPlannerPage() {
         eventType: eventType === "Khác" ? customEventType : eventType,
         guestCount,
         budget,
-        ecoLevel
+        ecoLevel,
+        userId: user?.id,
       });
       setResult(plan);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to generate plan:", error);
-      alert("Failed to connect to AI Planner. Please try again.");
+      alert(error.message || "Failed to connect to AI Planner. Please try again.");
     } finally {
       setLoading(false);
     }

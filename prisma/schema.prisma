@@ -66,6 +66,10 @@ model User {
   cart          Cart?
   reviews       Review[]
   sessions      Session[]
+  subscription  UserSubscription?
+  supportTickets SupportTicket[]
+  aiUsageCount  Int               @default(0)
+  lastAiReset   DateTime          @default(now())
 }
 
 model VerificationCode {
@@ -230,3 +234,119 @@ model Review {
   comment   String
   createdAt DateTime @default(now())
 }
+
+enum PlanTier {
+  FREE
+  PLUS
+  PREMIUM
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING_PAYMENT
+}
+
+model Plan {
+  id               String             @id @default(uuid())
+  tier             PlanTier           @unique
+  name             String
+  monthlyPrice     Float
+  yearlyPrice      Float
+  aiLimitPerMonth  Int                // -1 for unlimited
+  maxListings      Int                // -1 for unlimited
+  platformFeePct   Float
+  hasPdfExport     Boolean            @default(false)
+  hasTopSearch     Boolean            @default(false)
+  hasPortal        Boolean            @default(false)
+  hasAnalytics     Boolean            @default(false)
+  subscriptions    UserSubscription[]
+}
+
+model UserSubscription {
+  id             String                @id @default(uuid())
+  userId         String                @unique
+  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId         String
+  plan           Plan                  @relation(fields: [planId], references: [id])
+  status         SubscriptionStatus    @default(ACTIVE)
+  interval       BillingInterval       @default(MONTHLY)
+  startDate      DateTime              @default(now())
+  endDate        DateTime
+  payments       SubscriptionPayment[]
+}
+
+model SubscriptionPayment {
+  id             String           @id @default(uuid())
+  subscriptionId String
+  subscription   UserSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  amount         Float
+  currency       String           @default("VND")
+  paymentMethod  String           @default("VIETQR")
+  transactionRef String?          @unique
+  status         String           @default("PENDING")
+  createdAt      DateTime         @default(now())
+  paidAt         DateTime?
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  PRODUCT_LINK
+}
+
+enum TicketStatus {
+  OPEN
+  RESOLVED
+  ESCALATED
+}
+
+model Conversation {
+  id           String    @id @default(uuid())
+  participantA String
+  participantB String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  messages     Message[]
+
+  @@unique([participantA, participantB])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  content        String?
+  type           MessageType  @default(TEXT)
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  attachments    Attachment[]
+}
+
+model Attachment {
+  id        String      @id @default(uuid())
+  messageId String
+  message   Message     @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  fileUrl   String
+  fileType  MessageType
+  createdAt DateTime    @default(now())
+}
+
+model SupportTicket {
+  id           String       @id @default(uuid())
+  userId       String
+  user         User         @relation(fields: [userId], references: [id])
+  status       TicketStatus @default(OPEN)
+  chatHistory  Json
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
