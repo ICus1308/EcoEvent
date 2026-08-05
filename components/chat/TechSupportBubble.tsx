@@ -5,6 +5,8 @@ import { Headset, X, Send, Image, Video, User, Bot, Loader2, Paperclip, AlertCir
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/AuthProvider";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface ChatMessage {
   id: string;
@@ -292,7 +294,11 @@ export default function TechSupportBubble({
                         )}
                       </div>
                     )}
-                    <p className="whitespace-pre-line leading-relaxed">{m.text}</p>
+                    <div className="markdown-content text-sm leading-relaxed space-y-2 [&>p]:whitespace-pre-wrap [&>ul]:list-disc [&>ul]:ml-4 [&>ol]:list-decimal [&>ol]:ml-4 [&>h1]:font-bold [&>h2]:font-bold [&>h3]:font-bold [&>h4]:font-bold [&>strong]:font-bold [&>a]:text-blue-200 [&>a]:underline">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {m.text}
+                      </ReactMarkdown>
+                    </div>
                     <span
                       className={`block text-[10px] mt-1 text-right ${
                         m.sender === "user" ? "text-emerald-100" : "text-slate-400"

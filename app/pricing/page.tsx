@@ -76,7 +76,7 @@ export default function PricingPage() {
             <ArrowLeft className="w-3.5 h-3.5" /> Quay lại trang chủ
           </Link>
 
-          <span className="block text-emerald-400 font-numeric font-bold text-xs uppercase tracking-widest mb-3">
+          <span className="block text-emerald-400 font-numeric font-bold text-sm uppercase tracking-widest mb-3">
             Bảng giá gói thành viên
           </span>
           <h1 className="text-4xl sm:text-5xl font-extrabold font-heading tracking-tight text-white mb-4">
@@ -107,7 +107,7 @@ export default function PricingPage() {
               }`}
             >
               Thanh toán theo năm
-              <span className="bg-emerald-400/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-numeric border border-emerald-400/30">
+              <span className="bg-emerald-400/20 text-emerald-300 text-xs px-2 py-0.5 rounded-full font-numeric border border-emerald-400/30">
                 Tiết kiệm 20%
               </span>
             </button>
@@ -129,7 +129,7 @@ export default function PricingPage() {
             {/* GÓI CƠ BẢN (FREE) */}
             <HoverCard className={`bg-white rounded-3xl border ${currentTier === "FREE" ? "border-emerald-500 shadow-emerald-100/50" : "border-slate-200"} p-8 shadow-sm flex flex-col justify-between relative`}>
               {currentTier === "FREE" && (
-                <div className="absolute -top-3.5 right-6 bg-slate-900 text-white text-[10px] font-bold font-numeric uppercase px-3 py-1 rounded-full border border-slate-700">
+                <div className="absolute -top-3.5 right-6 bg-slate-900 text-white text-xs font-bold font-numeric uppercase px-3 py-1 rounded-full border border-slate-700">
                   Gói hiện tại
                 </div>
               )}
@@ -140,16 +140,16 @@ export default function PricingPage() {
                   </div>
                   <h3 className="text-xl font-bold font-heading text-slate-900">Gói cơ bản</h3>
                 </div>
-                <p className="text-xs text-slate-500 mb-6 h-10">Dành cho cá nhân trải nghiệm ứng dụng và tổ chức sự kiện quy mô nhỏ.</p>
+                <p className="text-sm text-slate-500 mb-6 h-10">Dành cho cá nhân trải nghiệm ứng dụng và tổ chức sự kiện quy mô nhỏ.</p>
                 
                 <div className="mb-6">
                   <span className="text-4xl font-extrabold font-numeric text-slate-900">0đ</span>
-                  <span className="text-xs text-slate-500 font-medium"> / mãi mãi</span>
+                  <span className="text-sm text-slate-500 font-medium"> / mãi mãi</span>
                 </div>
 
                 <hr className="border-slate-100 mb-6" />
 
-                <ul className="space-y-3.5 text-xs font-body text-slate-600 mb-8">
+                <ul className="space-y-3.5 text-sm font-body text-slate-600 mb-8">
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                     <span><strong>2 Kế hoạch AI</strong> / tháng</span>
@@ -164,15 +164,15 @@ export default function PricingPage() {
                   </li>
                   <li className="flex items-center gap-2.5 text-slate-400">
                     <X className="w-4 h-4 text-slate-300 flex-shrink-0" />
-                    <span className="line-through">Huy hiệu Verified Eco Host</span>
+                    <span>Huy hiệu Verified Eco Host</span>
                   </li>
                   <li className="flex items-center gap-2.5 text-slate-400">
                     <X className="w-4 h-4 text-slate-300 flex-shrink-0" />
-                    <span className="line-through">Xuất file PDF/Excel kịch bản</span>
+                    <span>Xuất file PDF/Excel kịch bản</span>
                   </li>
                   <li className="flex items-center gap-2.5 text-slate-400">
                     <X className="w-4 h-4 text-slate-300 flex-shrink-0" />
-                    <span className="line-through">Top-Search Boost bài đăng</span>
+                    <span>Top-Search Boost bài đăng</span>
                   </li>
                 </ul>
               </div>
@@ -181,7 +181,7 @@ export default function PricingPage() {
                 variant="outline"
                 disabled={currentTier === "FREE"}
                 onClick={() => handleSelectPlan("FREE")}
-                className="w-full h-12 rounded-2xl border-slate-300 font-bold text-xs"
+                className="w-full h-12 rounded-2xl border-slate-300 font-bold text-sm"
               >
                 {currentTier === "FREE" ? "Gói đang sử dụng" : "Dùng miễn phí"}
               </Button>
@@ -189,7 +189,7 @@ export default function PricingPage() {
 
             {/* GÓI PLUS (PRO - POPULAR) */}
             <HoverCard className={`bg-gradient-to-b from-emerald-950 via-slate-900 to-slate-900 text-white rounded-3xl border-2 border-emerald-500 p-8 shadow-xl flex flex-col justify-between relative transform md:-translate-y-2`}>
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold font-numeric text-[11px] uppercase tracking-wider px-4 py-1 rounded-full shadow-lg flex items-center gap-1.5">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold font-numeric text-xs uppercase tracking-wider px-4 py-1 rounded-full shadow-lg flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" /> Phổ biến nhất
               </div>
               
@@ -202,23 +202,23 @@ export default function PricingPage() {
                     <h3 className="text-xl font-bold font-heading text-white">Gói Plus</h3>
                   </div>
                   {currentTier === "PLUS" && (
-                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold px-2.5 py-0.5 rounded-full">
+                    <span className="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold px-2.5 py-0.5 rounded-full">
                       Đang dùng
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-300 mb-6 h-10">Dành cho Người tổ chức sự kiện thường xuyên & Sinh viên tích cực.</p>
+                <p className="text-sm text-slate-300 mb-6 h-10">Dành cho Người tổ chức sự kiện thường xuyên & Sinh viên tích cực.</p>
                 
                 <div className="mb-6">
                   <span className="text-4xl font-extrabold font-numeric text-emerald-400">
                     {isAnnual ? "990.000đ" : "99.000đ"}
                   </span>
-                  <span className="text-xs text-slate-400 font-medium"> / {isAnnual ? "năm" : "tháng"}</span>
+                  <span className="text-sm text-slate-400 font-medium"> / {isAnnual ? "năm" : "tháng"}</span>
                 </div>
 
                 <hr className="border-slate-800 mb-6" />
 
-                <ul className="space-y-3.5 text-xs font-body text-slate-200 mb-8">
+                <ul className="space-y-3.5 text-sm font-body text-slate-200 mb-8">
                   <li className="flex items-center gap-2.5">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                     <span><strong>AI Event Plan VÔ HẠN</strong></span>
@@ -249,7 +249,7 @@ export default function PricingPage() {
               <Button
                 disabled={currentTier === "PLUS"}
                 onClick={() => handleSelectPlan("PLUS")}
-                className="w-full h-12 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg transition-all"
+                className="w-full h-12 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg transition-all"
               >
                 {currentTier === "PLUS" ? "Gói hiện tại" : "Nâng cấp gói Plus"}
               </Button>
@@ -258,7 +258,7 @@ export default function PricingPage() {
             {/* GÓI PREMIUM VENDOR */}
             <HoverCard className={`bg-white rounded-3xl border ${currentTier === "PREMIUM" ? "border-amber-500 shadow-amber-100/50" : "border-slate-200"} p-8 shadow-sm flex flex-col justify-between relative`}>
               {currentTier === "PREMIUM" && (
-                <div className="absolute -top-3.5 right-6 bg-amber-500 text-slate-950 text-[10px] font-bold font-numeric uppercase px-3 py-1 rounded-full">
+                <div className="absolute -top-3.5 right-6 bg-amber-500 text-slate-950 text-xs font-bold font-numeric uppercase px-3 py-1 rounded-full">
                   Gói hiện tại
                 </div>
               )}
@@ -269,18 +269,18 @@ export default function PricingPage() {
                   </div>
                   <h3 className="text-xl font-bold font-heading text-slate-900">Gói Premium Vendor</h3>
                 </div>
-                <p className="text-xs text-slate-500 mb-6 h-10">Dành cho Nhà cung cấp, Ban quản lý KTX, Khoa & Các CLB lớn.</p>
+                <p className="text-sm text-slate-500 mb-6 h-10">Dành cho Công ty sự kiện, Kho chứa đồ & Dịch vụ chuyên nghiệp.</p>
                 
                 <div className="mb-6">
                   <span className="text-4xl font-extrabold font-numeric text-amber-600">
-                    {isAnnual ? "2.990.000đ" : "299.000đ"}
+                    {isAnnual ? "2.900.000đ" : "290.000đ"}
                   </span>
-                  <span className="text-xs text-slate-500 font-medium"> / {isAnnual ? "năm" : "tháng"}</span>
+                  <span className="text-sm text-slate-500 font-medium"> / {isAnnual ? "năm" : "tháng"}</span>
                 </div>
 
                 <hr className="border-slate-100 mb-6" />
 
-                <ul className="space-y-3.5 text-xs font-body text-slate-600 mb-8">
+                <ul className="space-y-3.5 text-sm font-body text-slate-600 mb-8">
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-amber-600 flex-shrink-0" />
                     <span>Đăng vật phẩm <strong>KHÔNG GIỚI HẠN</strong></span>
@@ -311,7 +311,7 @@ export default function PricingPage() {
               <Button
                 disabled={currentTier === "PREMIUM"}
                 onClick={() => handleSelectPlan("PREMIUM")}
-                className="w-full h-12 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-md transition-all"
+                className="w-full h-12 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm shadow-md transition-all"
               >
                 {currentTier === "PREMIUM" ? "Gói hiện tại" : "Đăng ký Premium Vendor"}
               </Button>
